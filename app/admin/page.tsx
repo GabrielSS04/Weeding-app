@@ -20,27 +20,29 @@ export default async function Admin() {
   const totalPessoas = rows.reduce((sum, r) => sum + 1 + r.guests, 0);
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-12">
-      <header className="flex items-baseline justify-between">
-        <h1 className="font-serif text-4xl text-foreground">Painel Administrativo</h1>
+    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-5 py-10 sm:px-6 sm:py-12">
+      <header className="flex flex-wrap items-baseline justify-between gap-2">
+        <h1 className="font-serif text-3xl text-foreground sm:text-4xl">
+          Painel Administrativo
+        </h1>
         <span className="font-sans text-xs uppercase tracking-[0.3em] text-muted">
           Restrito
         </span>
       </header>
 
-      <section className="mt-8 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg border border-accent/20 bg-white p-6">
+      <section className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-2">
+        <div className="rounded-lg border border-accent/20 bg-white p-5 sm:p-6">
           <p className="font-sans text-sm text-muted">Confirmações</p>
-          <p className="mt-1 font-serif text-4xl text-accent">{totalConfirmados}</p>
+          <p className="mt-1 font-serif text-3xl text-accent sm:text-4xl">{totalConfirmados}</p>
         </div>
-        <div className="rounded-lg border border-accent/20 bg-white p-6">
+        <div className="rounded-lg border border-accent/20 bg-white p-5 sm:p-6">
           <p className="font-sans text-sm text-muted">Total de pessoas</p>
-          <p className="mt-1 font-serif text-4xl text-accent">{totalPessoas}</p>
+          <p className="mt-1 font-serif text-3xl text-accent sm:text-4xl">{totalPessoas}</p>
         </div>
       </section>
 
-      <section className="mt-10 overflow-hidden rounded-lg border border-accent/20 bg-white">
-        <table className="w-full text-left font-sans text-sm">
+      <section className="mt-8 overflow-x-auto rounded-lg border border-accent/20 bg-white sm:mt-10">
+        <table className="w-full min-w-[640px] text-left font-sans text-sm">
           <thead className="bg-accent-soft/40 text-muted">
             <tr>
               <th className="px-4 py-3">Quando</th>

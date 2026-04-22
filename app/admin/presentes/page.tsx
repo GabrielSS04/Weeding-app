@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { createGift, deleteGift } from "./actions";
+import { createGift, deleteGift, refreshGiftMetadata } from "./actions";
 
 export const dynamic = "force-dynamic";
+
+type Selector = { name: string; email: string; at: string };
 
 type Gift = {
   id: number;
@@ -12,18 +14,47 @@ type Gift = {
   image: string | null;
   quantity: number;
   created_at: Date;
+  selectors: Selector[];
 };
 
 export default async function AdminPresentes() {
   const { rows } = await db.query<Gift>(
-    "SELECT id, url, price, title, image, quantity, created_at FROM gifts ORDER BY created_at DESC"
+    `SELECT g.id, g.url, g.price, g.title, g.image, g.quantity, g.created_at,
+       COALESCE(
+         json_agg(
+           json_build_object('name', s.name, 'email', s.email, 'at', s.created_at)
+           ORDER BY s.created_at
+         ) FILTER (WHERE s.id IS NOT NULL),
+         '[]'::json
+       ) AS selectors
+     FROM gifts g
+     LEFT JOIN gift_selections s ON s.gift_id = g.id
+     GROUP BY g.id
+     ORDER BY g.created_at DESC`
   );
 
-  return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-12">
-      <h1 className="font-serif text-4xl text-foreground">Gerenciar Presentes</h1>
+  const gifts = rows;
+  const pendingMetadata = gifts.filter(
+    (g) => !g.price || !g.title || !g.image
+  ).length;
 
-      <section className="mt-8 rounded-lg border border-accent/20 bg-white p-6">
+  return (
+    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-5 py-10 sm:px-6 sm:py-12">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <h1 className="font-serif text-3xl text-foreground sm:text-4xl">Gerenciar Presentes</h1>
+        {pendingMetadata > 0 && (
+          <form action={refreshGiftMetadata}>
+            <button
+              type="submit"
+              className="rounded-md border border-accent/40 bg-accent-soft/40 px-3 py-1.5 font-sans text-xs text-foreground transition hover:bg-accent-soft"
+            >
+              Atualizar metadados pendentes ({pendingMetadata})
+            </button>
+          </form>
+        )}
+      </div>
+
+      <section className="mt-6 rounded-lg border border-accent/20 bg-white p-5 sm:mt-8 sm:p-6">
         <h2 className="font-serif text-2xl text-accent">Adicionar presente</h2>
         <p className="mt-1 font-sans text-sm text-muted">
           Só a URL é obrigatória. Título e imagem são preenchidos automaticamente
@@ -88,27 +119,28 @@ export default async function AdminPresentes() {
         </form>
       </section>
 
-      <section className="mt-10 overflow-hidden rounded-lg border border-accent/20 bg-white">
-        <table className="w-full text-left font-sans text-sm">
+      <section className="mt-8 overflow-x-auto rounded-lg border border-accent/20 bg-white sm:mt-10">
+        <table className="w-full min-w-[880px] text-left font-sans text-sm">
           <thead className="bg-accent-soft/40 text-muted">
             <tr>
               <th className="px-4 py-3">Imagem</th>
               <th className="px-4 py-3">Título / URL</th>
               <th className="px-4 py-3">Qtd</th>
               <th className="px-4 py-3">Preço</th>
+              <th className="px-4 py-3">Selecionado por</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-accent/10">
-            {rows.length === 0 && (
+            {gifts.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted">
+                <td colSpan={6} className="px-4 py-8 text-center text-muted">
                   Nenhum presente cadastrado.
                 </td>
               </tr>
             )}
-            {rows.map((g) => (
-              <tr key={g.id}>
+            {gifts.map((g) => (
+              <tr key={g.id} className="align-top">
                 <td className="px-4 py-3">
                   {g.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -136,8 +168,37 @@ export default async function AdminPresentes() {
                     {g.url}
                   </a>
                 </td>
-                <td className="px-4 py-3 text-foreground">{g.quantity}</td>
+                <td className="px-4 py-3 text-foreground">
+                  <span className="font-medium">
+                    {g.selectors.length}
+                  </span>
+                  <span className="text-muted">/{g.quantity}</span>
+                </td>
                 <td className="px-4 py-3 text-accent">{g.price ?? "—"}</td>
+                <td className="px-4 py-3">
+                  {g.selectors.length === 0 ? (
+                    <span className="text-muted">—</span>
+                  ) : (
+                    <ul className="space-y-1.5">
+                      {g.selectors.map((s) => (
+                        <li key={s.email} className="leading-tight">
+                          <p className="text-foreground">{s.name}</p>
+                          <p className="text-xs text-muted">
+                            <a
+                              href={`mailto:${s.email}`}
+                              className="hover:text-accent"
+                            >
+                              {s.email}
+                            </a>
+                            <span className="ml-2">
+                              {new Date(s.at).toLocaleDateString("pt-BR")}
+                            </span>
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </td>
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-2">
                     <Link

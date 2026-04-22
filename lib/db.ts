@@ -7,8 +7,10 @@ declare global {
 
 export const db =
   globalThis.__pgPool ??
-  new Pool({ connectionString: process.env.DATABASE_URL });
+  new Pool({
+    connectionString: process.env.DATABASE_URL,
+    max: 1,
+    idleTimeoutMillis: 10_000,
+  });
 
-if (process.env.NODE_ENV !== "production") {
-  globalThis.__pgPool = db;
-}
+globalThis.__pgPool = db;
