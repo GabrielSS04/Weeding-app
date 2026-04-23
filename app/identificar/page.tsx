@@ -12,7 +12,7 @@ export default async function Identificar({
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 py-12 sm:px-6 sm:py-16">
-      <Link href="/presentes" className="font-sans text-sm text-muted hover:text-accent">
+      <Link href={next ?? "/charraia/presentes"} className="font-sans text-sm text-muted hover:text-accent">
         ← Voltar
       </Link>
       <h1 className="mt-6 font-serif text-3xl text-foreground sm:mt-8 sm:text-4xl">
@@ -30,7 +30,7 @@ export default async function Identificar({
       )}
 
       <form action={identify} className="mt-8 space-y-4">
-        <input type="hidden" name="next" value={next ?? "/presentes"} />
+        <input type="hidden" name="next" value={next ?? "/charraia/presentes"} />
         {gift_id && <input type="hidden" name="gift_id" value={gift_id} />}
         <div>
           <label className="block font-sans text-sm text-muted">Nome</label>

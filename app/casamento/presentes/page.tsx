@@ -46,7 +46,7 @@ export default async function Presentes() {
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 py-12 sm:px-6 sm:py-16">
-      <Link href="/" className="font-sans text-sm text-muted hover:text-accent">
+      <Link href="/casamento" className="font-sans text-sm text-muted hover:text-accent">
         ← Voltar
       </Link>
       <div className="mt-6 flex flex-wrap items-end justify-between gap-3 sm:mt-8">
@@ -70,7 +70,7 @@ export default async function Presentes() {
           </div>
         ) : (
           <Link
-            href="/identificar"
+            href="/identificar?next=%2Fcasamento%2Fpresentes"
             className="rounded-md border border-accent/30 px-3 py-1.5 font-sans text-xs text-muted transition hover:bg-accent-soft/40"
           >
             Identificar-se

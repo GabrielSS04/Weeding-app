@@ -5,6 +5,13 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { clearGuest, getGuest } from "@/lib/session";
 
+const BASE = "/casamento/presentes";
+
+function revalidateBoth() {
+  revalidatePath("/casamento/presentes");
+  revalidatePath("/charraia/presentes");
+}
+
 export async function selectGift(formData: FormData) {
   const giftId = Number(formData.get("gift_id"));
   if (!Number.isInteger(giftId)) return;
@@ -12,7 +19,7 @@ export async function selectGift(formData: FormData) {
   const guest = await getGuest();
   if (!guest) {
     redirect(
-      `/identificar?next=${encodeURIComponent("/presentes")}&gift_id=${giftId}`
+      `/identificar?next=${encodeURIComponent(BASE)}&gift_id=${giftId}`
     );
   }
 
@@ -27,7 +34,7 @@ export async function selectGift(formData: FormData) {
     [giftId]
   );
   if (c[0].count >= g[0].quantity) {
-    revalidatePath("/presentes");
+    revalidateBoth();
     return;
   }
 
@@ -35,7 +42,7 @@ export async function selectGift(formData: FormData) {
     "INSERT INTO gift_selections (gift_id, name, email) VALUES ($1, $2, $3) ON CONFLICT (gift_id, email) DO NOTHING",
     [giftId, guest.name, guest.email]
   );
-  revalidatePath("/presentes");
+  revalidateBoth();
 }
 
 export async function unselectGift(formData: FormData) {
@@ -49,10 +56,10 @@ export async function unselectGift(formData: FormData) {
     "DELETE FROM gift_selections WHERE gift_id = $1 AND email = $2",
     [giftId, guest.email]
   );
-  revalidatePath("/presentes");
+  revalidateBoth();
 }
 
 export async function signOut() {
   await clearGuest();
-  revalidatePath("/presentes");
+  revalidateBoth();
 }

@@ -42,7 +42,8 @@ export async function createGift(formData: FormData) {
   );
 
   revalidatePath("/admin/presentes");
-  revalidatePath("/presentes");
+  revalidatePath("/casamento/presentes");
+  revalidatePath("/charraia/presentes");
 }
 
 export async function updateGift(formData: FormData) {
@@ -65,7 +66,8 @@ export async function updateGift(formData: FormData) {
   );
 
   revalidatePath("/admin/presentes");
-  revalidatePath("/presentes");
+  revalidatePath("/casamento/presentes");
+  revalidatePath("/charraia/presentes");
   redirect("/admin/presentes");
 }
 
@@ -76,7 +78,8 @@ export async function deleteGift(formData: FormData) {
   await db.query("DELETE FROM gifts WHERE id = $1", [id]);
 
   revalidatePath("/admin/presentes");
-  revalidatePath("/presentes");
+  revalidatePath("/casamento/presentes");
+  revalidatePath("/charraia/presentes");
 }
 
 export async function refreshGiftMetadata() {
@@ -111,5 +114,6 @@ export async function refreshGiftMetadata() {
   );
 
   revalidatePath("/admin/presentes");
-  revalidatePath("/presentes");
+  revalidatePath("/casamento/presentes");
+  revalidatePath("/charraia/presentes");
 }

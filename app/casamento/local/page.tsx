@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Local() {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-5 py-12 sm:px-6 sm:py-16">
-      <Link href="/" className="font-sans text-sm text-muted hover:text-accent">
+      <Link href="/casamento" className="font-sans text-sm text-muted hover:text-accent">
         ← Voltar
       </Link>
       <h1 className="mt-6 font-serif text-4xl text-foreground sm:mt-8 sm:text-5xl">

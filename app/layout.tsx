@@ -14,12 +14,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Gabriel & Nathalia — Nosso Casamento",
+  title: "Charraia — Gabriel & Nathalia",
   description:
-    "Bem-vindos ao nosso site de casamento. 12 de dezembro de 2026, Cascavel. Toda honra e glória a Deus.",
+    "Nosso Chá de Panelas com tema de Arraiá. Venha celebrar com a gente em Cascavel.",
   openGraph: {
-    title: "Gabriel & Nathalia — Nosso Casamento",
-    description: "12 de dezembro de 2026, Cascavel.",
+    title: "Charraia — Gabriel & Nathalia",
+    description: "Chá de Panelas + Arraiá. Cascavel.",
     type: "website",
     locale: "pt_BR",
   },

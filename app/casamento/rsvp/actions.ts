@@ -10,7 +10,7 @@ export async function submitRsvp(formData: FormData) {
   const message = String(formData.get("message") ?? "").trim() || null;
 
   if (!name || !email) {
-    redirect("/rsvp?error=campos");
+    redirect("/casamento/rsvp?error=campos");
   }
 
   await db.query(
@@ -18,5 +18,5 @@ export async function submitRsvp(formData: FormData) {
     [name, email, Number.isFinite(guests) ? guests : 0, message]
   );
 
-  redirect("/rsvp?ok=1");
+  redirect("/casamento/rsvp?ok=1");
 }

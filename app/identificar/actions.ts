@@ -5,16 +5,18 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { setGuest } from "@/lib/session";
 
+const DEFAULT_NEXT = "/charraia/presentes";
+
 function safeNext(value: string | null): string {
-  if (!value) return "/presentes";
-  if (!value.startsWith("/") || value.startsWith("//")) return "/presentes";
+  if (!value) return DEFAULT_NEXT;
+  if (!value.startsWith("/") || value.startsWith("//")) return DEFAULT_NEXT;
   return value;
 }
 
 export async function identify(formData: FormData) {
   const typedName = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const next = safeNext(String(formData.get("next") ?? "/presentes"));
+  const next = safeNext(String(formData.get("next") ?? DEFAULT_NEXT));
   const giftId = Number(formData.get("gift_id"));
 
   if (!typedName || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -44,7 +46,8 @@ export async function identify(formData: FormData) {
           "INSERT INTO gift_selections (gift_id, name, email) VALUES ($1, $2, $3) ON CONFLICT (gift_id, email) DO NOTHING",
           [giftId, name, email]
         );
-        revalidatePath("/presentes");
+        revalidatePath("/casamento/presentes");
+        revalidatePath("/charraia/presentes");
       }
     }
   }
