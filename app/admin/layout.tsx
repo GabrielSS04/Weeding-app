@@ -26,6 +26,12 @@ export default function AdminLayout({
               Presentes
             </Link>
             <Link
+              href="/admin/conselhos"
+              className="text-muted transition hover:text-accent"
+            >
+              Conselhos
+            </Link>
+            <Link
               href="/"
               className="text-muted transition hover:text-accent"
             >

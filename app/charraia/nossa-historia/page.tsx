@@ -11,13 +11,15 @@ export default function NossaHistoriaCharraia() {
       </h1>
       <div className="mt-5 space-y-4 font-serif text-base leading-relaxed text-foreground sm:mt-6 sm:space-y-5 sm:text-lg">
         <p>
-          Conte aqui como vocês se conheceram, o pedido, e os momentos mais
-          marcantes do relacionamento.
+          Nossa história começou de forma simples, mas cheia de significado.
+          Entre encontros, risadas e muitos sonhos compartilhados, fomos
+          construindo uma parceria baseada em amor, respeito e companheirismo.
         </p>
         <p>
-          E de como, no meio do caminho, resolveram fazer uma festa junina pra
-          celebrar a próxima fase — afinal, casamento bom começa com muita
-          fartura, fogueira acesa e quadrilha sem fim.
+          Hoje, damos mais um passo importante juntos: o nosso lar. Esse chá de
+          casa nova representa não só um novo espaço, mas o início de mais um
+          capítulo da nossa história, que estamos muito felizes em dividir com
+          vocês.
         </p>
       </div>
     </main>

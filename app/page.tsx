@@ -4,6 +4,7 @@ import Link from "next/link";
 const navLinks = [
   { href: "/charraia/nossa-historia", label: "Nossa História" },
   { href: "/charraia/presentes", label: "Lista de Presentes" },
+  { href: "/charraia/conselhos", label: "Conselhos para o Casal" },
 ];
 
 export default function Charraia() {
