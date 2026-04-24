@@ -25,7 +25,7 @@ export default async function PresentesCharraia() {
        (SELECT COUNT(*)::int FROM gift_selections s WHERE s.gift_id = g.id) AS selected_count,
        EXISTS (SELECT 1 FROM gift_selections s WHERE s.gift_id = g.id AND s.email = $1) AS mine
      FROM gifts g
-     ORDER BY g.created_at DESC`,
+     ORDER BY COALESCE(g.title, g.url) ASC`,
     [email]
   );
 
@@ -78,8 +78,10 @@ export default async function PresentesCharraia() {
         )}
       </div>
       <p className="mt-3 max-w-2xl font-serif text-base text-muted sm:mt-4 sm:text-lg">
-        Escolha um presente pra compor nosso arraiá. O botão{" "}
-        <em>Selecionar</em> reserva o item, e o link leva direto ao produto.
+        Sua presença já é o que mais importa. Os itens abaixo são apenas
+        sugestões &mdash; se preferir presentear com outra coisa, ou não
+        presentear, fique totalmente à vontade. O botão <em>Selecionar</em>{" "}
+        reserva o item, e o link leva direto ao produto.
       </p>
 
       {products.length === 0 ? (

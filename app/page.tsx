@@ -40,9 +40,8 @@ export default function Charraia() {
               <span>Cascavel</span>
             </div>
             <p className="mt-6 max-w-md font-serif text-base leading-relaxed text-foreground sm:mt-8 sm:text-lg">
-              Fogueira, quadrilha, comidinhas típicas e, claro, presentes pra
-              começar a montar nossa Casinha. Venha celebrar com a gente &mdash;
-              de xadrez, chapéu de palha e muita alegria.
+              Fogueira, quadrilha e comidinhas típicas. Venha celebrar com a
+              gente &mdash; de xadrez, chapéu de palha e muita alegria.
             </p>
           </div>
         </div>
