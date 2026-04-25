@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getGuest } from "@/lib/session";
-import { GuestBadge } from "@/app/_components/GuestBadge";
 import { selectGift, unselectGift } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -50,12 +49,9 @@ export default async function PresentesCharraia() {
       <Link href="/" className="font-sans text-sm text-muted hover:text-accent">
         ← Voltar
       </Link>
-      <div className="mt-6 flex flex-wrap items-end justify-between gap-3 sm:mt-8">
-        <h1 className="font-serif text-4xl text-foreground sm:text-5xl">
-          Lista de Presentes
-        </h1>
-        <GuestBadge next="/charraia/presentes" />
-      </div>
+      <h1 className="mt-6 font-serif text-4xl text-foreground sm:mt-8 sm:text-5xl">
+        Lista de Presentes
+      </h1>
       <p className="mt-3 max-w-2xl font-serif text-base text-muted sm:mt-4 sm:text-lg">
         Sua presença já é o que mais importa. Os itens abaixo são apenas
         sugestões &mdash; se preferir presentear com outra coisa, ou não

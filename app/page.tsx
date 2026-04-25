@@ -1,22 +1,18 @@
 import Image from "next/image";
-import Link from "next/link";
-import { GuestBadge } from "@/app/_components/GuestBadge";
+import { cookies } from "next/headers";
+import { CharraiaHeader } from "@/app/_components/CharraiaHeader";
+import { Splash } from "@/app/_components/Splash";
 
-const navLinks = [
-  { href: "/charraia/nossa-historia", label: "Nossa História" },
-  { href: "/charraia/presentes", label: "Lista de Presentes" },
-  { href: "/charraia/conselhos", label: "Conselhos para o Casal" },
-];
+export default async function Charraia() {
+  const store = await cookies();
+  const showSplash = store.get("splash_seen")?.value !== "1";
 
-export default function Charraia() {
   return (
-    <main data-theme="junino" className="flex flex-1 flex-col items-center bg-background">
-      <div className="bandeirinhas w-full" aria-hidden />
+    <main data-theme="junino" className="flex flex-1 flex-col items-stretch bg-background">
+      {showSplash && <Splash />}
+      <CharraiaHeader />
 
-      <section className="w-full max-w-6xl px-5 pt-10 pb-10 sm:px-6 sm:pt-16 sm:pb-12 md:pt-20">
-        <div className="mb-4 flex justify-end sm:mb-6">
-          <GuestBadge next="/" />
-        </div>
+      <section className="mx-auto w-full max-w-6xl px-5 pt-8 pb-10 sm:px-6 sm:pt-12 sm:pb-12 md:pt-16">
         <div className="grid gap-8 md:grid-cols-2 md:items-center md:gap-12">
           <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-accent-soft shadow-md sm:mx-auto sm:max-w-md md:max-w-none">
             <Image
@@ -74,21 +70,6 @@ export default function Charraia() {
           </div>
         </div>
       </section>
-
-      <nav className="w-full max-w-6xl px-5 py-8 sm:px-6 sm:py-12">
-        <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="group flex items-center justify-center rounded-md border border-accent/40 bg-white px-5 py-5 font-serif text-lg text-foreground transition hover:border-accent hover:bg-accent-soft/40 sm:px-6 sm:py-6 sm:text-xl"
-            >
-              {link.label}
-              <span className="ml-2 text-accent transition group-hover:translate-x-1">→</span>
-            </Link>
-          ))}
-        </div>
-      </nav>
 
       <footer className="w-full py-6 text-center font-sans text-sm text-muted sm:py-8">
         Arraiá dos noivos • Cai, cai balão &bull; 2026

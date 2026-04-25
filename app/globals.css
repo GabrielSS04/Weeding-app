@@ -24,6 +24,7 @@
   --color-muted: var(--muted);
   --font-serif: var(--font-cormorant);
   --font-sans: var(--font-inter);
+  --font-script: var(--font-great-vibes);
 }
 
 body {

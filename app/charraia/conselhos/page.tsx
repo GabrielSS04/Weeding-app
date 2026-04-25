@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getGuest } from "@/lib/session";
-import { GuestBadge } from "@/app/_components/GuestBadge";
 import { createAdvice, deleteAdvice, updateAdvice } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -43,12 +42,9 @@ export default async function ConselhosCharraia({
         ← Voltar
       </Link>
 
-      <div className="mt-6 flex flex-wrap items-end justify-between gap-3 sm:mt-8">
-        <h1 className="font-serif text-4xl text-foreground sm:text-5xl">
-          Conselhos para o Casal
-        </h1>
-        <GuestBadge next="/charraia/conselhos" />
-      </div>
+      <h1 className="mt-6 font-serif text-4xl text-foreground sm:mt-8 sm:text-5xl">
+        Conselhos para o Casal
+      </h1>
 
       <p className="mt-3 max-w-2xl font-serif text-base text-muted sm:mt-4 sm:text-lg">
         Deixe uma dica, conselho ou mensagem carinhosa para o futuro do
