@@ -23,7 +23,7 @@ export function CharraiaHeader() {
           Charraia
         </Link>
 
-        <nav className="hidden items-center gap-x-5 font-sans text-sm sm:flex">
+        <nav className="hidden items-center justify-center gap-x-6 font-sans text-sm sm:flex sm:flex-1">
           {navLinks.map((l) => (
             <Link
               key={l.href}
@@ -35,7 +35,7 @@ export function CharraiaHeader() {
           ))}
         </nav>
 
-        <div className="flex flex-1 items-center justify-end sm:ml-auto sm:flex-none">
+        <div className="flex flex-1 items-center justify-end sm:flex-none">
           <GuestBadge next="/" />
         </div>
       </div>
