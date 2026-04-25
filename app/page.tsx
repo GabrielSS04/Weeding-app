@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { GuestBadge } from "@/app/_components/GuestBadge";
 
 const navLinks = [
   { href: "/charraia/nossa-historia", label: "Nossa História" },
@@ -13,6 +14,9 @@ export default function Charraia() {
       <div className="bandeirinhas w-full" aria-hidden />
 
       <section className="w-full max-w-6xl px-5 pt-10 pb-10 sm:px-6 sm:pt-16 sm:pb-12 md:pt-20">
+        <div className="mb-4 flex justify-end sm:mb-6">
+          <GuestBadge next="/" />
+        </div>
         <div className="grid gap-8 md:grid-cols-2 md:items-center md:gap-12">
           <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-accent-soft shadow-md sm:mx-auto sm:max-w-md md:max-w-none">
             <Image

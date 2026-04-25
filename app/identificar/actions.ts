@@ -24,7 +24,13 @@ export async function identify(formData: FormData) {
   }
 
   const { rows: existing } = await db.query<{ name: string }>(
-    "SELECT name FROM gift_selections WHERE email = $1 ORDER BY created_at DESC LIMIT 1",
+    `SELECT name FROM (
+       SELECT name, created_at FROM gift_selections WHERE email = $1
+       UNION ALL
+       SELECT name, created_at FROM advices WHERE email = $1
+     ) s
+     ORDER BY created_at DESC
+     LIMIT 1`,
     [email]
   );
   const name = existing[0]?.name ?? typedName;

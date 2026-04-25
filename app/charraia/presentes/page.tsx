@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getGuest } from "@/lib/session";
-import { selectGift, signOut, unselectGift } from "./actions";
+import { GuestBadge } from "@/app/_components/GuestBadge";
+import { selectGift, unselectGift } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -53,29 +54,7 @@ export default async function PresentesCharraia() {
         <h1 className="font-serif text-4xl text-foreground sm:text-5xl">
           Lista de Presentes
         </h1>
-        {guest ? (
-          <div className="flex items-center gap-2 font-sans text-xs text-muted">
-            <span>
-              Identificado como{" "}
-              <strong className="text-foreground">{guest.name}</strong>
-            </span>
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="rounded-md border border-accent/30 px-2 py-1 text-xs transition hover:bg-accent-soft/40"
-              >
-                sair
-              </button>
-            </form>
-          </div>
-        ) : (
-          <Link
-            href="/identificar?next=%2Fcharraia%2Fpresentes"
-            className="rounded-md border border-accent/30 px-3 py-1.5 font-sans text-xs text-muted transition hover:bg-accent-soft/40"
-          >
-            Identificar-se
-          </Link>
-        )}
+        <GuestBadge next="/charraia/presentes" />
       </div>
       <p className="mt-3 max-w-2xl font-serif text-base text-muted sm:mt-4 sm:text-lg">
         Sua presença já é o que mais importa. Os itens abaixo são apenas

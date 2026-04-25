@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getGuest } from "@/lib/session";
+import { GuestBadge } from "@/app/_components/GuestBadge";
 import { createAdvice, deleteAdvice, updateAdvice } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -46,12 +47,7 @@ export default async function ConselhosCharraia({
         <h1 className="font-serif text-4xl text-foreground sm:text-5xl">
           Conselhos para o Casal
         </h1>
-        {guest ? (
-          <span className="font-sans text-xs text-muted">
-            Identificado como{" "}
-            <strong className="text-foreground">{guest.name}</strong>
-          </span>
-        ) : null}
+        <GuestBadge next="/charraia/conselhos" />
       </div>
 
       <p className="mt-3 max-w-2xl font-serif text-base text-muted sm:mt-4 sm:text-lg">
