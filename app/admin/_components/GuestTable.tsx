@@ -59,18 +59,7 @@ function GuestActions({ guest }: { guest: Guest }) {
           </button>
         </form>
       )}
-      <form
-        action={deleteGuest}
-        onSubmit={(e) => {
-          if (
-            !confirm(
-              `Remover "${guest.name}" da lista? Essa ação não pode ser desfeita.`
-            )
-          ) {
-            e.preventDefault();
-          }
-        }}
-      >
+      <form action={deleteGuest}>
         <input type="hidden" name="id" value={guest.id} />
         <button
           type="submit"
