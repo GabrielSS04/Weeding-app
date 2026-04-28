@@ -1,5 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { VenueMap } from "./_components/VenueMap";
+
+const VENUE_NAME = "Espaço de Eventos Remonatto";
+const VENUE_ADDRESS =
+  "Rua Caraíbas, 500 — Bairro Santa Cruz, Cascavel - PR";
+const VENUE_QUERY =
+  "Espaço de Eventos Remonatto, Rua Caraíbas 500, Santa Cruz, Cascavel, PR";
 
 const navLinks = [
   { href: "/casamento/nossa-historia", label: "Nossa História" },
@@ -62,6 +69,22 @@ export default function Home() {
           ))}
         </div>
       </nav>
+
+      <section className="w-full max-w-6xl px-5 pb-8 sm:px-6 sm:pb-12">
+        <div className="mb-4 flex items-baseline justify-between sm:mb-5">
+          <h2 className="font-serif text-2xl text-foreground sm:text-3xl">
+            Onde será
+          </h2>
+          <span className="font-sans text-xs uppercase tracking-[0.3em] text-muted">
+            12 . 12 . 2026
+          </span>
+        </div>
+        <VenueMap
+          name={VENUE_NAME}
+          address={VENUE_ADDRESS}
+          query={VENUE_QUERY}
+        />
+      </section>
 
       <section className="w-full bg-accent-soft/40 py-12 sm:py-16">
         <div className="mx-auto max-w-3xl px-5 text-center sm:px-6">

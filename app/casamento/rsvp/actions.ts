@@ -1,22 +1,43 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 
-export async function submitRsvp(formData: FormData) {
-  const name = String(formData.get("name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
-  const guests = Number(formData.get("guests") ?? 0);
-  const message = String(formData.get("message") ?? "").trim() || null;
+const ALLOWED_NEXT = new Set(["/casamento/rsvp", "/charraia/rsvp"]);
 
-  if (!name || !email) {
-    redirect("/casamento/rsvp?error=campos");
+function safeNext(value: FormDataEntryValue | null): string {
+  const raw = String(value ?? "");
+  return ALLOWED_NEXT.has(raw) ? raw : "/casamento/rsvp";
+}
+
+export async function confirmGuest(formData: FormData) {
+  const next = safeNext(formData.get("next"));
+  const id = Number(formData.get("id"));
+  if (!Number.isInteger(id)) {
+    redirect(`${next}?error=invalido`);
+  }
+
+  const { rows } = await db.query<{ id: number; confirmed_at: Date | null }>(
+    "SELECT id, confirmed_at FROM guest_list WHERE id = $1",
+    [id]
+  );
+
+  if (rows.length === 0) {
+    redirect(`${next}?error=naoencontrado`);
+  }
+
+  if (rows[0].confirmed_at) {
+    redirect(`${next}?already=${id}`);
   }
 
   await db.query(
-    "INSERT INTO rsvps (name, email, guests, message) VALUES ($1, $2, $3, $4)",
-    [name, email, Number.isFinite(guests) ? guests : 0, message]
+    "UPDATE guest_list SET confirmed_at = NOW() WHERE id = $1",
+    [id]
   );
 
-  redirect("/casamento/rsvp?ok=1");
+  revalidatePath("/casamento/rsvp");
+  revalidatePath("/charraia/rsvp");
+  revalidatePath("/admin");
+  redirect(`${next}?ok=${id}`);
 }

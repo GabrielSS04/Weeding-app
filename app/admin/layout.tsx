@@ -17,7 +17,7 @@ export default function AdminLayout({
               href="/admin"
               className="text-muted transition hover:text-accent"
             >
-              Confirmações
+              Convidados
             </Link>
             <Link
               href="/admin/presentes"

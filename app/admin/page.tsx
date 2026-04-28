@@ -1,79 +1,115 @@
 import { db } from "@/lib/db";
+import { addGuest, addGuestsBulk } from "./actions";
+import { GuestTable } from "./_components/GuestTable";
 
 export const dynamic = "force-dynamic";
 
-type Rsvp = {
+type GuestRow = {
   id: number;
   name: string;
-  email: string;
-  guests: number;
-  message: string | null;
+  confirmed_at: Date | null;
   created_at: Date;
 };
 
 export default async function Admin() {
-  const { rows } = await db.query<Rsvp>(
-    "SELECT id, name, email, guests, message, created_at FROM rsvps ORDER BY created_at DESC"
+  const { rows } = await db.query<GuestRow>(
+    "SELECT id, name, confirmed_at, created_at FROM guest_list ORDER BY name ASC"
   );
 
-  const totalConfirmados = rows.length;
-  const totalPessoas = rows.reduce((sum, r) => sum + 1 + r.guests, 0);
+  const total = rows.length;
+  const confirmados = rows.filter((r) => r.confirmed_at !== null).length;
+  const pendentes = total - confirmados;
+
+  const guests = rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    confirmed_at: r.confirmed_at ? r.confirmed_at.toISOString() : null,
+    created_at: r.created_at.toISOString(),
+  }));
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-5 py-10 sm:px-6 sm:py-12">
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="font-serif text-3xl text-foreground sm:text-4xl">
-          Painel Administrativo
+          Lista de Convidados
         </h1>
         <span className="font-sans text-xs uppercase tracking-[0.3em] text-muted">
           Restrito
         </span>
       </header>
 
-      <section className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-2">
+      <section className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-3">
         <div className="rounded-lg border border-accent/20 bg-white p-5 sm:p-6">
-          <p className="font-sans text-sm text-muted">Confirmações</p>
-          <p className="mt-1 font-serif text-3xl text-accent sm:text-4xl">{totalConfirmados}</p>
+          <p className="font-sans text-sm text-muted">Convidados</p>
+          <p className="mt-1 font-serif text-3xl text-accent sm:text-4xl">
+            {total}
+          </p>
         </div>
         <div className="rounded-lg border border-accent/20 bg-white p-5 sm:p-6">
-          <p className="font-sans text-sm text-muted">Total de pessoas</p>
-          <p className="mt-1 font-serif text-3xl text-accent sm:text-4xl">{totalPessoas}</p>
+          <p className="font-sans text-sm text-muted">Confirmados</p>
+          <p className="mt-1 font-serif text-3xl text-emerald-600 sm:text-4xl">
+            {confirmados}
+          </p>
+        </div>
+        <div className="rounded-lg border border-accent/20 bg-white p-5 sm:p-6">
+          <p className="font-sans text-sm text-muted">Pendentes</p>
+          <p className="mt-1 font-serif text-3xl text-foreground sm:text-4xl">
+            {pendentes}
+          </p>
         </div>
       </section>
 
-      <section className="mt-8 overflow-x-auto rounded-lg border border-accent/20 bg-white sm:mt-10">
-        <table className="w-full min-w-[640px] text-left font-sans text-sm">
-          <thead className="bg-accent-soft/40 text-muted">
-            <tr>
-              <th className="px-4 py-3">Quando</th>
-              <th className="px-4 py-3">Nome</th>
-              <th className="px-4 py-3">E-mail</th>
-              <th className="px-4 py-3">Acompanhantes</th>
-              <th className="px-4 py-3">Mensagem</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-accent/10">
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted">
-                  Nenhuma confirmação ainda.
-                </td>
-              </tr>
-            )}
-            {rows.map((r) => (
-              <tr key={r.id}>
-                <td className="px-4 py-3 text-muted">
-                  {new Date(r.created_at).toLocaleString("pt-BR")}
-                </td>
-                <td className="px-4 py-3 text-foreground">{r.name}</td>
-                <td className="px-4 py-3 text-muted">{r.email}</td>
-                <td className="px-4 py-3 text-foreground">{r.guests}</td>
-                <td className="px-4 py-3 text-muted">{r.message ?? "—"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <section className="mt-6 grid gap-4 sm:mt-8 lg:grid-cols-2">
+        <div className="rounded-lg border border-accent/20 bg-white p-5 sm:p-6">
+          <h2 className="font-serif text-2xl text-accent">
+            Adicionar convidado
+          </h2>
+          <p className="mt-1 font-sans text-sm text-muted">
+            Inclua um nome de cada vez.
+          </p>
+          <form action={addGuest} className="mt-4 flex gap-2">
+            <input
+              name="name"
+              type="text"
+              required
+              placeholder="Nome completo"
+              className="flex-1 rounded-md border border-accent/30 bg-white px-3 py-2 font-sans text-sm outline-none focus:border-accent"
+            />
+            <button
+              type="submit"
+              className="rounded-md bg-accent px-4 py-2 font-serif text-sm text-white transition hover:opacity-90"
+            >
+              Adicionar
+            </button>
+          </form>
+        </div>
+
+        <div className="rounded-lg border border-accent/20 bg-white p-5 sm:p-6">
+          <h2 className="font-serif text-2xl text-accent">
+            Adicionar em lote
+          </h2>
+          <p className="mt-1 font-sans text-sm text-muted">
+            Cole vários nomes — um por linha.
+          </p>
+          <form action={addGuestsBulk} className="mt-4 space-y-3">
+            <textarea
+              name="names"
+              rows={4}
+              required
+              placeholder={"Maria Silva\nJoão Santos\nAna Costa"}
+              className="w-full rounded-md border border-accent/30 bg-white px-3 py-2 font-sans text-sm outline-none focus:border-accent"
+            />
+            <button
+              type="submit"
+              className="rounded-md bg-accent px-4 py-2 font-serif text-sm text-white transition hover:opacity-90"
+            >
+              Adicionar todos
+            </button>
+          </form>
+        </div>
       </section>
+
+      <GuestTable guests={guests} />
     </main>
   );
 }

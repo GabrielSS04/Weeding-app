@@ -2,6 +2,13 @@ import Image from "next/image";
 import { cookies } from "next/headers";
 import { CharraiaHeader } from "@/app/_components/CharraiaHeader";
 import { Splash } from "@/app/_components/Splash";
+import { VenueMap } from "@/app/casamento/_components/VenueMap";
+
+const VENUE_NAME = "Espaço de Eventos Remonatto";
+const VENUE_ADDRESS =
+  "Rua Caraíbas, 500 — Bairro Santa Cruz, Cascavel - PR";
+const VENUE_QUERY =
+  "Espaço de Eventos Remonatto, Rua Caraíbas 500, Santa Cruz, Cascavel, PR";
 
 export default async function Charraia() {
   const store = await cookies();
@@ -62,13 +69,21 @@ export default async function Charraia() {
           <div className="rounded-lg border border-accent/30 bg-white p-5 sm:p-6">
             <h2 className="font-serif text-lg text-accent sm:text-xl">Onde</h2>
             <p className="mt-2 font-serif text-base text-foreground sm:text-lg">
-              Centro Comunitário do Bairro Sol Nascente
+              {VENUE_NAME}
             </p>
             <p className="mt-1 font-sans text-sm text-muted">
-              Cascavel — PR
+              {VENUE_ADDRESS}
             </p>
           </div>
         </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-3xl px-5 pb-10 sm:px-6 sm:pb-12">
+        <VenueMap
+          name={VENUE_NAME}
+          address={VENUE_ADDRESS}
+          query={VENUE_QUERY}
+        />
       </section>
 
       <footer className="w-full py-6 text-center font-sans text-sm text-muted sm:py-8">

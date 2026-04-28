@@ -4,6 +4,7 @@ import { MobileMenu } from "@/app/_components/MobileMenu";
 
 const navLinks = [
   { href: "/charraia/nossa-historia", label: "Nossa História" },
+  { href: "/charraia/rsvp", label: "Confirmar Presença" },
   { href: "/charraia/presentes", label: "Presentes" },
   { href: "/charraia/conselhos", label: "Conselhos" },
 ];
