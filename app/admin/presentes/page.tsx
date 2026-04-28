@@ -119,109 +119,194 @@ export default async function AdminPresentes() {
         </form>
       </section>
 
-      <section className="mt-8 overflow-x-auto rounded-lg border border-accent/20 bg-white sm:mt-10">
-        <table className="w-full min-w-[880px] text-left font-sans text-sm">
-          <thead className="bg-accent-soft/40 text-muted">
-            <tr>
-              <th className="px-4 py-3">Imagem</th>
-              <th className="px-4 py-3">Título / URL</th>
-              <th className="px-4 py-3">Qtd</th>
-              <th className="px-4 py-3">Preço</th>
-              <th className="px-4 py-3">Selecionado por</th>
-              <th className="px-4 py-3"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-accent/10">
-            {gifts.length === 0 && (
-              <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-muted">
-                  Nenhum presente cadastrado.
-                </td>
-              </tr>
-            )}
-            {gifts.map((g) => (
-              <tr key={g.id} className="align-top">
-                <td className="px-4 py-3">
+      <section className="mt-6 rounded-lg border border-accent/20 bg-white sm:mt-10">
+        <ul className="divide-y divide-accent/10 lg:hidden">
+          {gifts.length === 0 ? (
+            <li className="px-4 py-8 text-center font-sans text-sm text-muted">
+              Nenhum presente cadastrado.
+            </li>
+          ) : (
+            gifts.map((g) => (
+              <li key={g.id} className="space-y-3 px-4 py-4">
+                <div className="flex gap-3">
                   {g.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={g.image}
                       alt=""
-                      className="h-14 w-14 rounded object-contain"
+                      className="h-16 w-16 flex-shrink-0 rounded object-contain"
                     />
                   ) : (
-                    <div className="flex h-14 w-14 items-center justify-center rounded bg-accent-soft/40 text-xs text-muted">
+                    <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded bg-accent-soft/40 text-xs text-muted">
                       —
                     </div>
                   )}
-                </td>
-                <td className="px-4 py-3">
-                  <p className="font-serif text-base text-foreground">
-                    {g.title ?? "(sem título — puxa do OG)"}
-                  </p>
-                  <a
-                    href={g.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="break-all text-xs text-muted hover:text-accent"
-                  >
-                    {g.url}
-                  </a>
-                </td>
-                <td className="px-4 py-3 text-foreground">
-                  <span className="font-medium">
-                    {g.selectors.length}
-                  </span>
-                  <span className="text-muted">/{g.quantity}</span>
-                </td>
-                <td className="px-4 py-3 text-accent">{g.price ?? "—"}</td>
-                <td className="px-4 py-3">
-                  {g.selectors.length === 0 ? (
-                    <span className="text-muted">—</span>
-                  ) : (
-                    <ul className="space-y-1.5">
-                      {g.selectors.map((s) => (
-                        <li key={s.email} className="leading-tight">
-                          <p className="text-foreground">{s.name}</p>
-                          <p className="text-xs text-muted">
-                            <a
-                              href={`mailto:${s.email}`}
-                              className="hover:text-accent"
-                            >
-                              {s.email}
-                            </a>
-                            <span className="ml-2">
-                              {new Date(s.at).toLocaleDateString("pt-BR")}
-                            </span>
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex justify-end gap-2">
-                    <Link
-                      href={`/admin/presentes/${g.id}/edit`}
-                      className="rounded-md border border-accent/30 px-3 py-1 text-xs text-foreground transition hover:bg-accent-soft/40"
+                  <div className="min-w-0 flex-1">
+                    <p className="font-serif text-base text-foreground">
+                      {g.title ?? "(sem título — puxa do OG)"}
+                    </p>
+                    <a
+                      href={g.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="break-all font-sans text-xs text-muted hover:text-accent"
                     >
-                      Editar
-                    </Link>
-                    <form action={deleteGift}>
-                      <input type="hidden" name="id" value={g.id} />
-                      <button
-                        type="submit"
-                        className="rounded-md border border-red-300 px-3 py-1 text-xs text-red-700 transition hover:bg-red-50"
-                      >
-                        Remover
-                      </button>
-                    </form>
+                      {g.url}
+                    </a>
                   </div>
-                </td>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-sans text-sm">
+                  <span className="text-foreground">
+                    <span className="font-medium">{g.selectors.length}</span>
+                    <span className="text-muted">/{g.quantity}</span>
+                    <span className="ml-1 text-xs text-muted">selecionados</span>
+                  </span>
+                  <span className="text-accent">{g.price ?? "sem preço"}</span>
+                </div>
+                {g.selectors.length > 0 && (
+                  <ul className="space-y-1.5 rounded-md bg-accent-soft/20 p-3 font-sans text-sm">
+                    {g.selectors.map((s) => (
+                      <li key={s.email} className="leading-tight">
+                        <p className="text-foreground">{s.name}</p>
+                        <p className="text-xs text-muted">
+                          <a
+                            href={`mailto:${s.email}`}
+                            className="break-all hover:text-accent"
+                          >
+                            {s.email}
+                          </a>
+                          <span className="ml-2 whitespace-nowrap">
+                            {new Date(s.at).toLocaleDateString("pt-BR")}
+                          </span>
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    href={`/admin/presentes/${g.id}/edit`}
+                    className="rounded-md border border-accent/30 px-3 py-1 font-sans text-xs text-foreground transition hover:bg-accent-soft/40"
+                  >
+                    Editar
+                  </Link>
+                  <form action={deleteGift}>
+                    <input type="hidden" name="id" value={g.id} />
+                    <button
+                      type="submit"
+                      className="rounded-md border border-red-300 px-3 py-1 font-sans text-xs text-red-700 transition hover:bg-red-50"
+                    >
+                      Remover
+                    </button>
+                  </form>
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
+
+        <div className="hidden overflow-x-auto lg:block">
+          <table className="w-full text-left font-sans text-sm">
+            <thead className="bg-accent-soft/40 text-muted">
+              <tr>
+                <th className="px-4 py-3">Imagem</th>
+                <th className="px-4 py-3">Título / URL</th>
+                <th className="px-4 py-3">Qtd</th>
+                <th className="px-4 py-3">Preço</th>
+                <th className="px-4 py-3">Selecionado por</th>
+                <th className="px-4 py-3"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-accent/10">
+              {gifts.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-4 py-8 text-center text-muted">
+                    Nenhum presente cadastrado.
+                  </td>
+                </tr>
+              )}
+              {gifts.map((g) => (
+                <tr key={g.id} className="align-top">
+                  <td className="px-4 py-3">
+                    {g.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={g.image}
+                        alt=""
+                        className="h-14 w-14 rounded object-contain"
+                      />
+                    ) : (
+                      <div className="flex h-14 w-14 items-center justify-center rounded bg-accent-soft/40 text-xs text-muted">
+                        —
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="font-serif text-base text-foreground">
+                      {g.title ?? "(sem título — puxa do OG)"}
+                    </p>
+                    <a
+                      href={g.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="break-all text-xs text-muted hover:text-accent"
+                    >
+                      {g.url}
+                    </a>
+                  </td>
+                  <td className="px-4 py-3 text-foreground">
+                    <span className="font-medium">{g.selectors.length}</span>
+                    <span className="text-muted">/{g.quantity}</span>
+                  </td>
+                  <td className="px-4 py-3 text-accent">{g.price ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    {g.selectors.length === 0 ? (
+                      <span className="text-muted">—</span>
+                    ) : (
+                      <ul className="space-y-1.5">
+                        {g.selectors.map((s) => (
+                          <li key={s.email} className="leading-tight">
+                            <p className="text-foreground">{s.name}</p>
+                            <p className="text-xs text-muted">
+                              <a
+                                href={`mailto:${s.email}`}
+                                className="hover:text-accent"
+                              >
+                                {s.email}
+                              </a>
+                              <span className="ml-2">
+                                {new Date(s.at).toLocaleDateString("pt-BR")}
+                              </span>
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-2">
+                      <Link
+                        href={`/admin/presentes/${g.id}/edit`}
+                        className="rounded-md border border-accent/30 px-3 py-1 text-xs text-foreground transition hover:bg-accent-soft/40"
+                      >
+                        Editar
+                      </Link>
+                      <form action={deleteGift}>
+                        <input type="hidden" name="id" value={g.id} />
+                        <button
+                          type="submit"
+                          className="rounded-md border border-red-300 px-3 py-1 text-xs text-red-700 transition hover:bg-red-50"
+                        >
+                          Remover
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </main>
   );
