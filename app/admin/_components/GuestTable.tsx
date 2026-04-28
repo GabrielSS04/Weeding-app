@@ -3,18 +3,22 @@
 import { useMemo, useState } from "react";
 import {
   confirmGuestAdmin,
+  declineGuestAdmin,
   deleteGuest,
-  unconfirmGuest,
+  resetGuestStatus,
 } from "../actions";
+
+type GuestStatus = "pending" | "confirmed" | "declined";
 
 type Guest = {
   id: number;
   name: string;
-  confirmed_at: string | null;
+  status: GuestStatus;
+  responded_at: string | null;
   created_at: string;
 };
 
-type Filter = "todos" | "confirmados" | "pendentes";
+type Filter = "todos" | "confirmados" | "pendentes" | "nao_vao";
 
 function normalize(s: string): string {
   return s
@@ -23,12 +27,22 @@ function normalize(s: string): string {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function StatusBadge({ confirmed }: { confirmed: boolean }) {
-  return confirmed ? (
-    <span className="inline-block rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">
-      ✓ Confirmado
-    </span>
-  ) : (
+function StatusBadge({ status }: { status: GuestStatus }) {
+  if (status === "confirmed") {
+    return (
+      <span className="inline-block rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">
+        ✓ Confirmado
+      </span>
+    );
+  }
+  if (status === "declined") {
+    return (
+      <span className="inline-block rounded-full border border-rose-300 bg-rose-50 px-2 py-0.5 text-xs text-rose-700">
+        × Não vai
+      </span>
+    );
+  }
+  return (
     <span className="inline-block rounded-full border border-accent/30 bg-accent-soft/40 px-2 py-0.5 text-xs text-muted">
       Pendente
     </span>
@@ -38,17 +52,7 @@ function StatusBadge({ confirmed }: { confirmed: boolean }) {
 function GuestActions({ guest }: { guest: Guest }) {
   return (
     <div className="flex flex-wrap gap-2">
-      {guest.confirmed_at ? (
-        <form action={unconfirmGuest}>
-          <input type="hidden" name="id" value={guest.id} />
-          <button
-            type="submit"
-            className="rounded-md border border-accent/30 px-3 py-1 text-xs text-foreground transition hover:bg-accent-soft/40"
-          >
-            Desfazer
-          </button>
-        </form>
-      ) : (
+      {guest.status !== "confirmed" && (
         <form action={confirmGuestAdmin}>
           <input type="hidden" name="id" value={guest.id} />
           <button
@@ -56,6 +60,28 @@ function GuestActions({ guest }: { guest: Guest }) {
             className="rounded-md border border-emerald-400 px-3 py-1 text-xs text-emerald-700 transition hover:bg-emerald-50"
           >
             Marcar confirmado
+          </button>
+        </form>
+      )}
+      {guest.status !== "declined" && (
+        <form action={declineGuestAdmin}>
+          <input type="hidden" name="id" value={guest.id} />
+          <button
+            type="submit"
+            className="rounded-md border border-rose-300 px-3 py-1 text-xs text-rose-700 transition hover:bg-rose-50"
+          >
+            Marcar não vai
+          </button>
+        </form>
+      )}
+      {guest.status !== "pending" && (
+        <form action={resetGuestStatus}>
+          <input type="hidden" name="id" value={guest.id} />
+          <button
+            type="submit"
+            className="rounded-md border border-accent/30 px-3 py-1 text-xs text-foreground transition hover:bg-accent-soft/40"
+          >
+            Resetar
           </button>
         </form>
       )}
@@ -72,6 +98,13 @@ function GuestActions({ guest }: { guest: Guest }) {
   );
 }
 
+const FILTER_OPTIONS: { value: Filter; label: string }[] = [
+  { value: "todos", label: "Todos" },
+  { value: "confirmados", label: "Confirmados" },
+  { value: "pendentes", label: "Pendentes" },
+  { value: "nao_vao", label: "Não vão" },
+];
+
 export function GuestTable({ guests }: { guests: Guest[] }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("todos");
@@ -79,8 +112,9 @@ export function GuestTable({ guests }: { guests: Guest[] }) {
   const filtered = useMemo(() => {
     const q = normalize(query.trim());
     return guests.filter((g) => {
-      if (filter === "confirmados" && !g.confirmed_at) return false;
-      if (filter === "pendentes" && g.confirmed_at) return false;
+      if (filter === "confirmados" && g.status !== "confirmed") return false;
+      if (filter === "pendentes" && g.status !== "pending") return false;
+      if (filter === "nao_vao" && g.status !== "declined") return false;
       if (q && !normalize(g.name).includes(q)) return false;
       return true;
     });
@@ -103,13 +137,7 @@ export function GuestTable({ guests }: { guests: Guest[] }) {
           className="w-full rounded-md border border-accent/30 bg-white px-3 py-2 font-sans text-sm outline-none focus:border-accent sm:flex-1"
         />
         <div className="flex flex-wrap gap-1 font-sans text-xs">
-          {(
-            [
-              { value: "todos", label: "Todos" },
-              { value: "confirmados", label: "Confirmados" },
-              { value: "pendentes", label: "Pendentes" },
-            ] as { value: Filter; label: string }[]
-          ).map((opt) => (
+          {FILTER_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               type="button"
@@ -138,12 +166,12 @@ export function GuestTable({ guests }: { guests: Guest[] }) {
                 <p className="font-serif text-base text-foreground">
                   {g.name}
                 </p>
-                <StatusBadge confirmed={!!g.confirmed_at} />
+                <StatusBadge status={g.status} />
               </div>
-              {g.confirmed_at && (
+              {g.responded_at && (
                 <p className="font-sans text-xs text-muted">
-                  Confirmado em{" "}
-                  {new Date(g.confirmed_at).toLocaleString("pt-BR")}
+                  {g.status === "confirmed" ? "Confirmou em " : "Recusou em "}
+                  {new Date(g.responded_at).toLocaleString("pt-BR")}
                 </p>
               )}
               <GuestActions guest={g} />
@@ -158,7 +186,7 @@ export function GuestTable({ guests }: { guests: Guest[] }) {
             <tr>
               <th className="px-4 py-3">Nome</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Confirmado em</th>
+              <th className="px-4 py-3">Respondeu em</th>
               <th className="px-4 py-3 text-right">Ações</th>
             </tr>
           </thead>
@@ -176,11 +204,11 @@ export function GuestTable({ guests }: { guests: Guest[] }) {
                     {g.name}
                   </td>
                   <td className="px-4 py-3">
-                    <StatusBadge confirmed={!!g.confirmed_at} />
+                    <StatusBadge status={g.status} />
                   </td>
                   <td className="px-4 py-3 text-muted">
-                    {g.confirmed_at
-                      ? new Date(g.confirmed_at).toLocaleString("pt-BR")
+                    {g.responded_at
+                      ? new Date(g.responded_at).toLocaleString("pt-BR")
                       : "—"}
                   </td>
                   <td className="px-4 py-3">

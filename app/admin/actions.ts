@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 function revalidate() {
   revalidatePath("/admin");
   revalidatePath("/casamento/rsvp");
+  revalidatePath("/charraia/rsvp");
 }
 
 export async function addGuest(formData: FormData) {
@@ -46,18 +47,29 @@ export async function confirmGuestAdmin(formData: FormData) {
   if (!Number.isInteger(id)) return;
 
   await db.query(
-    "UPDATE guest_list SET confirmed_at = NOW() WHERE id = $1 AND confirmed_at IS NULL",
+    "UPDATE guest_list SET confirmed_at = NOW(), declined_at = NULL WHERE id = $1",
     [id]
   );
   revalidate();
 }
 
-export async function unconfirmGuest(formData: FormData) {
+export async function declineGuestAdmin(formData: FormData) {
   const id = Number(formData.get("id"));
   if (!Number.isInteger(id)) return;
 
   await db.query(
-    "UPDATE guest_list SET confirmed_at = NULL WHERE id = $1",
+    "UPDATE guest_list SET declined_at = NOW(), confirmed_at = NULL WHERE id = $1",
+    [id]
+  );
+  revalidate();
+}
+
+export async function resetGuestStatus(formData: FormData) {
+  const id = Number(formData.get("id"));
+  if (!Number.isInteger(id)) return;
+
+  await db.query(
+    "UPDATE guest_list SET confirmed_at = NULL, declined_at = NULL WHERE id = $1",
     [id]
   );
   revalidate();

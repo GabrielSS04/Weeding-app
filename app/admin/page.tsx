@@ -8,24 +8,37 @@ type GuestRow = {
   id: number;
   name: string;
   confirmed_at: Date | null;
+  declined_at: Date | null;
   created_at: Date;
 };
 
 export default async function Admin() {
   const { rows } = await db.query<GuestRow>(
-    "SELECT id, name, confirmed_at, created_at FROM guest_list ORDER BY name ASC"
+    "SELECT id, name, confirmed_at, declined_at, created_at FROM guest_list ORDER BY name ASC"
   );
 
   const total = rows.length;
   const confirmados = rows.filter((r) => r.confirmed_at !== null).length;
-  const pendentes = total - confirmados;
+  const naoVao = rows.filter(
+    (r) => r.declined_at !== null && r.confirmed_at === null
+  ).length;
+  const pendentes = total - confirmados - naoVao;
 
-  const guests = rows.map((r) => ({
-    id: r.id,
-    name: r.name,
-    confirmed_at: r.confirmed_at ? r.confirmed_at.toISOString() : null,
-    created_at: r.created_at.toISOString(),
-  }));
+  const guests = rows.map((r) => {
+    const status: "confirmed" | "declined" | "pending" = r.confirmed_at
+      ? "confirmed"
+      : r.declined_at
+      ? "declined"
+      : "pending";
+    const responded_at = r.confirmed_at ?? r.declined_at;
+    return {
+      id: r.id,
+      name: r.name,
+      status,
+      responded_at: responded_at ? responded_at.toISOString() : null,
+      created_at: r.created_at.toISOString(),
+    };
+  });
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-5 py-10 sm:px-6 sm:py-12">
@@ -38,7 +51,7 @@ export default async function Admin() {
         </span>
       </header>
 
-      <section className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-3">
+      <section className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border border-accent/20 bg-white p-5 sm:p-6">
           <p className="font-sans text-sm text-muted">Convidados</p>
           <p className="mt-1 font-serif text-3xl text-accent sm:text-4xl">
@@ -49,6 +62,12 @@ export default async function Admin() {
           <p className="font-sans text-sm text-muted">Confirmados</p>
           <p className="mt-1 font-serif text-3xl text-emerald-600 sm:text-4xl">
             {confirmados}
+          </p>
+        </div>
+        <div className="rounded-lg border border-accent/20 bg-white p-5 sm:p-6">
+          <p className="font-sans text-sm text-muted">Não vão</p>
+          <p className="mt-1 font-serif text-3xl text-rose-600 sm:text-4xl">
+            {naoVao}
           </p>
         </div>
         <div className="rounded-lg border border-accent/20 bg-white p-5 sm:p-6">

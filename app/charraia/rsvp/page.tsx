@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { formatRsvpDeadline, isRsvpClosed } from "@/lib/events";
 import { GuestSearchList } from "@/app/casamento/rsvp/_components/GuestSearchList";
 
 export const dynamic = "force-dynamic";
@@ -8,31 +9,58 @@ type GuestRow = {
   id: number;
   name: string;
   confirmed_at: Date | null;
+  declined_at: Date | null;
 };
 
 export default async function CharraiaRSVP({
   searchParams,
 }: {
-  searchParams: Promise<{ ok?: string; already?: string; error?: string }>;
+  searchParams: Promise<{
+    ok?: string;
+    already?: string;
+    declined?: string;
+    already_declined?: string;
+    reset?: string;
+    error?: string;
+  }>;
 }) {
-  const { ok, already, error } = await searchParams;
+  const params = await searchParams;
+  const closed = isRsvpClosed("charraia");
+  const deadlineLabel = formatRsvpDeadline("charraia");
 
   const { rows } = await db.query<GuestRow>(
-    "SELECT id, name, confirmed_at FROM guest_list ORDER BY name ASC"
+    "SELECT id, name, confirmed_at, declined_at FROM guest_list ORDER BY name ASC"
   );
 
   const guests = rows.map((g) => ({
     id: g.id,
     name: g.name,
-    confirmed: g.confirmed_at !== null,
+    status: (g.confirmed_at
+      ? "confirmed"
+      : g.declined_at
+      ? "declined"
+      : "pending") as "confirmed" | "declined" | "pending",
   }));
 
-  const okId = ok ? Number(ok) : null;
-  const alreadyId = already ? Number(already) : null;
-  const justConfirmed =
-    okId !== null ? rows.find((g) => g.id === okId) ?? null : null;
-  const alreadyConfirmed =
-    alreadyId !== null ? rows.find((g) => g.id === alreadyId) ?? null : null;
+  const findById = (raw?: string) => {
+    if (!raw) return null;
+    const id = Number(raw);
+    if (!Number.isInteger(id)) return null;
+    return rows.find((g) => g.id === id) ?? null;
+  };
+
+  const justConfirmed = findById(params.ok);
+  const alreadyConfirmed = !justConfirmed ? findById(params.already) : null;
+  const justDeclined =
+    !justConfirmed && !alreadyConfirmed ? findById(params.declined) : null;
+  const alreadyDeclined =
+    !justConfirmed && !alreadyConfirmed && !justDeclined
+      ? findById(params.already_declined)
+      : null;
+  const justReset =
+    !justConfirmed && !alreadyConfirmed && !justDeclined && !alreadyDeclined
+      ? findById(params.reset)
+      : null;
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-5 py-10 sm:px-6 sm:py-12">
@@ -43,8 +71,18 @@ export default async function CharraiaRSVP({
         Confirmar Presença
       </h1>
       <p className="mt-3 font-serif text-base text-muted sm:mt-4 sm:text-lg">
-        Procure seu nome na lista e confirme presença no nosso arraiá. 🌽🔥
+        {closed
+          ? "O prazo de confirmação foi encerrado."
+          : `Confirme até ${deadlineLabel}.`}{" "}
+        🌽🔥
       </p>
+
+      {closed && (
+        <div className="mt-6 rounded-md border border-amber-300 bg-amber-50 p-4 font-sans text-sm text-amber-900 sm:mt-8 sm:p-5">
+          O prazo encerrou em <strong>{deadlineLabel}</strong>. Para ajustar,
+          fale com os noivos.
+        </div>
+      )}
 
       {justConfirmed && (
         <div
@@ -55,21 +93,50 @@ export default async function CharraiaRSVP({
           no arraiá. Te esperamos lá!
         </div>
       )}
-      {alreadyConfirmed && !justConfirmed && (
+      {alreadyConfirmed && (
         <div className="mt-6 rounded-md border border-accent/40 bg-accent-soft/40 p-4 font-serif text-base text-foreground sm:mt-8 sm:p-5 sm:text-lg">
           <strong>{alreadyConfirmed.name}</strong> já tinha confirmado.
           Se foi engano, fale com os noivos.
         </div>
       )}
-      {error && !justConfirmed && (
+      {justDeclined && (
+        <div
+          role="status"
+          className="mt-6 rounded-md border border-rose-300 bg-rose-50 p-4 font-serif text-base text-rose-900 sm:mt-8 sm:p-5 sm:text-lg"
+        >
+          🤍 Que pena, <strong>{justDeclined.name}</strong>! Obrigado por
+          avisar.
+        </div>
+      )}
+      {alreadyDeclined && (
+        <div className="mt-6 rounded-md border border-accent/40 bg-accent-soft/40 p-4 font-serif text-base text-foreground sm:mt-8 sm:p-5 sm:text-lg">
+          <strong>{alreadyDeclined.name}</strong> já tinha respondido que não
+          vai poder vir.
+        </div>
+      )}
+      {justReset && (
+        <div
+          role="status"
+          className="mt-6 rounded-md border border-accent/40 bg-accent-soft/40 p-4 font-serif text-base text-foreground sm:mt-8 sm:p-5 sm:text-lg"
+        >
+          Resposta de <strong>{justReset.name}</strong> removida.
+        </div>
+      )}
+      {params.error && (
         <div className="mt-6 rounded-md border border-red-300 bg-red-50 p-4 font-sans text-sm text-red-800 sm:mt-8 sm:p-5">
-          {error === "naoencontrado"
+          {params.error === "encerrado"
+            ? `O prazo de confirmação encerrou em ${deadlineLabel}.`
+            : params.error === "naoencontrado"
             ? "Não conseguimos encontrar esse convidado. Tente novamente."
             : "Algo deu errado. Tente novamente."}
         </div>
       )}
 
-      <GuestSearchList guests={guests} redirectTo="/charraia/rsvp" />
+      <GuestSearchList
+        guests={guests}
+        redirectTo="/charraia/rsvp"
+        closed={closed}
+      />
     </main>
   );
 }

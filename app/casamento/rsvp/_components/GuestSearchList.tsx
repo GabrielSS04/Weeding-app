@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { confirmGuest } from "../actions";
+import { confirmGuest, declineGuest, resetGuest } from "../actions";
+
+type GuestStatus = "pending" | "confirmed" | "declined";
 
 type Guest = {
   id: number;
   name: string;
-  confirmed: boolean;
+  status: GuestStatus;
 };
 
 function normalize(s: string): string {
@@ -16,12 +18,32 @@ function normalize(s: string): string {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+function StatusBadge({ status }: { status: GuestStatus }) {
+  if (status === "confirmed") {
+    return (
+      <span className="rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-sans text-xs text-emerald-700">
+        ✓ Confirmado
+      </span>
+    );
+  }
+  if (status === "declined") {
+    return (
+      <span className="rounded-full border border-rose-300 bg-rose-50 px-2 py-0.5 font-sans text-xs text-rose-700">
+        × Não vai
+      </span>
+    );
+  }
+  return <span className="font-sans text-xs text-muted">pendente</span>;
+}
+
 export function GuestSearchList({
   guests,
   redirectTo,
+  closed,
 }: {
   guests: Guest[];
   redirectTo: "/casamento/rsvp" | "/charraia/rsvp";
+  closed: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState<number | null>(null);
@@ -81,15 +103,7 @@ export function GuestSearchList({
                 >
                   <span>{g.name}</span>
                   <span className="flex items-center gap-2">
-                    {g.confirmed ? (
-                      <span className="rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-sans text-xs text-emerald-700">
-                        ✓ Confirmado
-                      </span>
-                    ) : (
-                      <span className="font-sans text-xs text-muted">
-                        pendente
-                      </span>
-                    )}
+                    <StatusBadge status={g.status} />
                     <svg
                       width="14"
                       height="14"
@@ -114,48 +128,14 @@ export function GuestSearchList({
                     id={`guest-panel-${g.id}`}
                     className="border-t border-accent/10 bg-accent-soft/20 px-4 py-4 sm:px-5"
                   >
-                    {g.confirmed ? (
-                      <>
-                        <p className="font-serif text-base text-foreground">
-                          <strong>{g.name}</strong> já confirmou presença.
-                        </p>
-                        <p className="mt-1 font-sans text-sm text-muted">
-                          Se foi engano, fale com os noivos para corrigir.
-                        </p>
-                      </>
+                    {closed ? (
+                      <ClosedPanel guest={g} />
                     ) : (
-                      <>
-                        <p className="font-serif text-base text-foreground">
-                          Confirmar presença em nome de{" "}
-                          <strong>{g.name}</strong>?
-                        </p>
-                        <p className="mt-1 font-sans text-sm text-muted">
-                          Confirme apenas se este é o seu nome.
-                        </p>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <form action={confirmGuest}>
-                            <input type="hidden" name="id" value={g.id} />
-                            <input
-                              type="hidden"
-                              name="next"
-                              value={redirectTo}
-                            />
-                            <button
-                              type="submit"
-                              className="rounded-md bg-accent px-5 py-2 font-serif text-base text-white transition hover:opacity-90"
-                            >
-                              Sim, sou eu — confirmar
-                            </button>
-                          </form>
-                          <button
-                            type="button"
-                            onClick={() => setOpenId(null)}
-                            className="rounded-md border border-accent/30 px-4 py-2 font-sans text-sm text-foreground transition hover:bg-accent-soft/40"
-                          >
-                            Cancelar
-                          </button>
-                        </div>
-                      </>
+                      <OpenPanel
+                        guest={g}
+                        redirectTo={redirectTo}
+                        onCancel={() => setOpenId(null)}
+                      />
                     )}
                   </div>
                 )}
@@ -165,5 +145,177 @@ export function GuestSearchList({
         )}
       </ul>
     </div>
+  );
+}
+
+function ClosedPanel({ guest }: { guest: Guest }) {
+  if (guest.status === "confirmed") {
+    return (
+      <p className="font-serif text-base text-foreground">
+        <strong>{guest.name}</strong> está confirmado(a).
+      </p>
+    );
+  }
+  if (guest.status === "declined") {
+    return (
+      <p className="font-serif text-base text-foreground">
+        <strong>{guest.name}</strong> respondeu que não vai poder vir.
+      </p>
+    );
+  }
+  return (
+    <p className="font-serif text-base text-foreground">
+      Prazo de confirmação encerrado. Fale com os noivos se precisar ajustar.
+    </p>
+  );
+}
+
+function OpenPanel({
+  guest,
+  redirectTo,
+  onCancel,
+}: {
+  guest: Guest;
+  redirectTo: "/casamento/rsvp" | "/charraia/rsvp";
+  onCancel: () => void;
+}) {
+  if (guest.status === "confirmed") {
+    return (
+      <>
+        <p className="font-serif text-base text-foreground">
+          <strong>{guest.name}</strong>, você já confirmou. Mudou de ideia?
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <DeclineButton id={guest.id} redirectTo={redirectTo} />
+          <ResetButton id={guest.id} redirectTo={redirectTo} label="Cancelar confirmação" />
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-md px-3 py-2 font-sans text-sm text-muted transition hover:text-foreground"
+          >
+            Fechar
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  if (guest.status === "declined") {
+    return (
+      <>
+        <p className="font-serif text-base text-foreground">
+          <strong>{guest.name}</strong>, você marcou que não vai. Mudou de
+          ideia?
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <ConfirmButton
+            id={guest.id}
+            redirectTo={redirectTo}
+            label="Quero confirmar"
+          />
+          <ResetButton id={guest.id} redirectTo={redirectTo} label="Remover resposta" />
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-md px-3 py-2 font-sans text-sm text-muted transition hover:text-foreground"
+          >
+            Fechar
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <p className="font-serif text-base text-foreground">
+        Você é <strong>{guest.name}</strong>?
+      </p>
+      <p className="mt-1 font-sans text-sm text-muted">
+        Confirme apenas se este é o seu nome.
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <ConfirmButton
+          id={guest.id}
+          redirectTo={redirectTo}
+          label="Sim, vou comparecer"
+        />
+        <DeclineButton id={guest.id} redirectTo={redirectTo} />
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-md px-3 py-2 font-sans text-sm text-muted transition hover:text-foreground"
+        >
+          Cancelar
+        </button>
+      </div>
+    </>
+  );
+}
+
+function ConfirmButton({
+  id,
+  redirectTo,
+  label,
+}: {
+  id: number;
+  redirectTo: string;
+  label: string;
+}) {
+  return (
+    <form action={confirmGuest}>
+      <input type="hidden" name="id" value={id} />
+      <input type="hidden" name="next" value={redirectTo} />
+      <button
+        type="submit"
+        className="rounded-md bg-accent px-5 py-2 font-serif text-base text-white transition hover:opacity-90"
+      >
+        {label}
+      </button>
+    </form>
+  );
+}
+
+function DeclineButton({
+  id,
+  redirectTo,
+}: {
+  id: number;
+  redirectTo: string;
+}) {
+  return (
+    <form action={declineGuest}>
+      <input type="hidden" name="id" value={id} />
+      <input type="hidden" name="next" value={redirectTo} />
+      <button
+        type="submit"
+        className="rounded-md border border-rose-300 px-4 py-2 font-sans text-sm text-rose-700 transition hover:bg-rose-50"
+      >
+        Não vou poder comparecer
+      </button>
+    </form>
+  );
+}
+
+function ResetButton({
+  id,
+  redirectTo,
+  label,
+}: {
+  id: number;
+  redirectTo: string;
+  label: string;
+}) {
+  return (
+    <form action={resetGuest}>
+      <input type="hidden" name="id" value={id} />
+      <input type="hidden" name="next" value={redirectTo} />
+      <button
+        type="submit"
+        className="rounded-md border border-accent/30 px-4 py-2 font-sans text-sm text-foreground transition hover:bg-accent-soft/40"
+      >
+        {label}
+      </button>
+    </form>
   );
 }
