@@ -90,7 +90,7 @@ export default async function Charraia() {
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center justify-center rounded-lg border border-accent/30 bg-white px-6 py-6 text-center font-serif text-xl text-accent shadow-sm transition hover:bg-accent-soft/40 hover:shadow-md sm:py-8 sm:text-2xl"
+              className="flex items-center justify-center rounded-lg border border-accent/30 bg-white px-6 py-6 text-center font-script text-3xl leading-tight text-accent shadow-sm transition hover:bg-accent-soft/40 hover:shadow-md sm:py-8 sm:text-4xl"
             >
               {item.label}
             </Link>

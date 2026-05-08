@@ -81,53 +81,54 @@ export default async function PresentesCharraia() {
                     key={p.id}
                     className="flex flex-col overflow-hidden rounded-lg border border-accent/40 bg-white transition hover:border-accent hover:shadow-md"
                   >
-                    <a
-                      href={p.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block"
-                    >
-                      <div className="aspect-square w-full bg-accent-soft/40 p-2 sm:p-3">
-                        <div className="relative h-full w-full overflow-hidden rounded-md bg-white">
-                          {p.image ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={p.image}
-                              alt={p.title ?? "Produto"}
-                              loading="lazy"
-                              className="absolute inset-0 h-full w-full object-contain p-3 sm:p-4"
-                            />
-                          ) : (
-                            <div className="flex h-full items-center justify-center font-sans text-sm text-muted">
-                              sem prévia
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="space-y-1.5 p-4 sm:p-5">
-                        <p className="line-clamp-2 font-sans text-sm leading-snug text-foreground lg:text-base">
-                          {p.title}
-                        </p>
-                        <p className="font-sans text-[11px] uppercase tracking-wide text-muted sm:text-xs">
-                          {p.site}
-                        </p>
-                        {p.price && (
-                          <div className="flex items-center justify-between pt-1">
-                            <span className="font-sans text-base font-semibold text-accent lg:text-lg">
-                              {p.price}
-                            </span>
+                    <div className="aspect-square w-full bg-accent-soft/40 p-2 sm:p-3">
+                      <div className="relative h-full w-full overflow-hidden rounded-md bg-white">
+                        {p.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={p.image}
+                            alt={p.title ?? "Produto"}
+                            loading="lazy"
+                            className="absolute inset-0 h-full w-full object-contain p-3 sm:p-4"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center font-sans text-sm text-muted">
+                            sem prévia
                           </div>
                         )}
                       </div>
-                    </a>
-                    <div className="mt-auto border-t border-accent/10 p-3 sm:p-4">
+                    </div>
+                    <div className="space-y-1.5 p-4 sm:p-5">
+                      <p className="line-clamp-2 font-sans text-sm leading-snug text-foreground lg:text-base">
+                        {p.title}
+                      </p>
+                      <p className="font-sans text-[11px] uppercase tracking-wide text-muted sm:text-xs">
+                        {p.site}
+                      </p>
+                      {p.price && (
+                        <div className="flex items-center justify-between pt-1">
+                          <span className="font-sans text-base font-semibold text-accent lg:text-lg">
+                            {p.price}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-auto flex flex-col gap-2 border-t border-accent/10 p-3 sm:p-4">
+                      <a
+                        href={p.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full rounded-md bg-accent py-2 text-center font-sans text-sm font-medium text-white transition hover:opacity-90"
+                      >
+                        Comprar
+                      </a>
                       <form action={unselectGift}>
                         <input type="hidden" name="gift_id" value={p.id} />
                         <button
                           type="submit"
                           className="w-full rounded-md border border-accent/40 bg-accent-soft/40 py-2 font-sans text-sm text-foreground transition hover:bg-accent-soft"
                         >
-                          ✓ Você escolheu — cancelar
+                          Cancelar
                         </button>
                       </form>
                     </div>
