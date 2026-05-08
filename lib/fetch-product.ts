@@ -59,7 +59,10 @@ function formatPrice(amount: string | null, currency: string | null): string | n
   }
 }
 
-export async function fetchProduct(url: string): Promise<Product> {
+export async function fetchProduct(
+  url: string,
+  opts: { noCache?: boolean } = {}
+): Promise<Product> {
   const site = new URL(url).hostname.replace(/^www\./, "");
   try {
     const res = await fetch(url, {
@@ -68,7 +71,9 @@ export async function fetchProduct(url: string): Promise<Product> {
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
         Accept: "text/html",
       },
-      next: { revalidate: 86400 },
+      ...(opts.noCache
+        ? { cache: "no-store" as const }
+        : { next: { revalidate: 86400 } }),
     });
     if (!res.ok) return { url, title: null, image: null, price: null, site };
     const html = (await res.text()).slice(0, 1_000_000);

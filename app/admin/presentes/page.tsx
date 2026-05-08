@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { createGift, deleteGift, refreshGiftMetadata } from "./actions";
+import {
+  createGift,
+  deleteGift,
+  refreshGiftMetadata,
+  refreshGiftPrices,
+} from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -42,16 +47,28 @@ export default async function AdminPresentes() {
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-5 py-10 sm:px-6 sm:py-12">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <h1 className="font-serif text-3xl text-foreground sm:text-4xl">Gerenciar Presentes</h1>
-        {pendingMetadata > 0 && (
-          <form action={refreshGiftMetadata}>
-            <button
-              type="submit"
-              className="rounded-md border border-accent/40 bg-accent-soft/40 px-3 py-1.5 font-sans text-xs text-foreground transition hover:bg-accent-soft"
-            >
-              Atualizar metadados pendentes ({pendingMetadata})
-            </button>
-          </form>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {pendingMetadata > 0 && (
+            <form action={refreshGiftMetadata}>
+              <button
+                type="submit"
+                className="rounded-md border border-accent/40 bg-accent-soft/40 px-3 py-1.5 font-sans text-xs text-foreground transition hover:bg-accent-soft"
+              >
+                Atualizar metadados pendentes ({pendingMetadata})
+              </button>
+            </form>
+          )}
+          {gifts.length > 0 && (
+            <form action={refreshGiftPrices}>
+              <button
+                type="submit"
+                className="rounded-md border border-accent/40 bg-accent-soft/40 px-3 py-1.5 font-sans text-xs text-foreground transition hover:bg-accent-soft"
+              >
+                Atualizar preços ({gifts.length})
+              </button>
+            </form>
+          )}
+        </div>
       </div>
 
       <section className="mt-6 rounded-lg border border-accent/20 bg-white p-5 sm:mt-8 sm:p-6">
