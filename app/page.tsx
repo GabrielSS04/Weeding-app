@@ -85,12 +85,12 @@ export default async function Charraia() {
           </div>
         </div>
 
-        <div className="mx-auto mt-6 grid max-w-3xl grid-cols-2 gap-3 px-5 sm:mt-8 sm:grid-cols-4 sm:gap-4 sm:px-6">
+        <div className="mx-auto mt-6 grid max-w-3xl grid-cols-1 gap-4 px-5 sm:mt-8 sm:grid-cols-2 sm:gap-5 sm:px-6">
           {navButtons.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center justify-center rounded-lg border border-accent/30 bg-white px-4 py-4 text-center font-serif text-base text-accent shadow-sm transition hover:bg-accent-soft/40 hover:shadow-md sm:py-5 sm:text-lg"
+              className="flex items-center justify-center rounded-lg border border-accent/30 bg-white px-6 py-6 text-center font-serif text-xl text-accent shadow-sm transition hover:bg-accent-soft/40 hover:shadow-md sm:py-8 sm:text-2xl"
             >
               {item.label}
             </Link>
