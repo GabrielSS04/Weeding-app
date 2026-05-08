@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { CharraiaHeader } from "@/app/_components/CharraiaHeader";
 import { Splash } from "@/app/_components/Splash";
@@ -9,6 +10,13 @@ const VENUE_ADDRESS =
   "Rua Caraíbas, 500 — Bairro Santa Cruz, Cascavel - PR";
 const VENUE_QUERY =
   "Espaço de Eventos Remonatto, Rua Caraíbas 500, Santa Cruz, Cascavel, PR";
+
+const navButtons = [
+  { href: "/charraia/nossa-historia", label: "Nossa História" },
+  { href: "/charraia/conselhos", label: "Conselhos" },
+  { href: "/charraia/rsvp", label: "Confirmar Presença" },
+  { href: "/charraia/presentes", label: "Presentes" },
+];
 
 export default async function Charraia() {
   const store = await cookies();
@@ -76,9 +84,21 @@ export default async function Charraia() {
             </p>
           </div>
         </div>
+
+        <div className="mx-auto mt-6 grid max-w-3xl grid-cols-2 gap-3 px-5 sm:mt-8 sm:grid-cols-4 sm:gap-4 sm:px-6">
+          {navButtons.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex items-center justify-center rounded-lg border border-accent/30 bg-white px-4 py-4 text-center font-serif text-base text-accent shadow-sm transition hover:bg-accent-soft/40 hover:shadow-md sm:py-5 sm:text-lg"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
       </section>
 
-      <section className="mx-auto w-full max-w-3xl px-5 pb-10 sm:px-6 sm:pb-12">
+      <section className="mx-auto w-full max-w-3xl px-5 pt-10 pb-10 sm:px-6 sm:pt-12 sm:pb-12">
         <VenueMap
           name={VENUE_NAME}
           address={VENUE_ADDRESS}
