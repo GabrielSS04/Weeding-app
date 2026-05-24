@@ -1,0 +1,257 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { deleteGift } from "../actions";
+
+type Selector = { name: string; email: string; at: string };
+
+type Gift = {
+  id: number;
+  url: string;
+  price: string | null;
+  title: string | null;
+  image: string | null;
+  quantity: number;
+  created_at: Date;
+  selectors: Selector[];
+};
+
+function normalize(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+export function GiftList({ gifts }: { gifts: Gift[] }) {
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = normalize(query.trim());
+    if (!q) return gifts;
+    return gifts.filter((g) => {
+      if (g.title && normalize(g.title).includes(q)) return true;
+      if (normalize(g.url).includes(q)) return true;
+      if (g.price && normalize(g.price).includes(q)) return true;
+      return g.selectors.some(
+        (s) => normalize(s.name).includes(q) || normalize(s.email).includes(q)
+      );
+    });
+  }, [gifts, query]);
+
+  return (
+    <section className="mt-6 rounded-lg border border-accent/20 bg-white sm:mt-10">
+      <div className="border-b border-accent/10 p-4 sm:p-5">
+        <label className="block font-sans text-sm text-muted">
+          Filtrar presentes
+        </label>
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Buscar por título, URL, preço ou pessoa que selecionou..."
+          autoComplete="off"
+          className="mt-1 w-full rounded-md border border-accent/30 bg-white px-4 py-2 font-sans text-sm text-foreground outline-none focus:border-accent"
+        />
+        {query && (
+          <p className="mt-2 font-sans text-xs text-muted">
+            {filtered.length} de {gifts.length} presentes
+          </p>
+        )}
+      </div>
+
+      <ul className="divide-y divide-accent/10 lg:hidden">
+        {filtered.length === 0 ? (
+          <li className="px-4 py-8 text-center font-sans text-sm text-muted">
+            {gifts.length === 0
+              ? "Nenhum presente cadastrado."
+              : "Nenhum presente encontrado."}
+          </li>
+        ) : (
+          filtered.map((g) => (
+            <li key={g.id} className="space-y-3 px-4 py-4">
+              <div className="flex gap-3">
+                {g.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={g.image}
+                    alt=""
+                    className="h-16 w-16 flex-shrink-0 rounded object-contain"
+                  />
+                ) : (
+                  <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded bg-accent-soft/40 text-xs text-muted">
+                    —
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="font-serif text-base text-foreground">
+                    {g.title ?? "(sem título — puxa do OG)"}
+                  </p>
+                  <a
+                    href={g.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all font-sans text-xs text-muted hover:text-accent"
+                  >
+                    {g.url}
+                  </a>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-sans text-sm">
+                <span className="text-foreground">
+                  <span className="font-medium">{g.selectors.length}</span>
+                  <span className="text-muted">/{g.quantity}</span>
+                  <span className="ml-1 text-xs text-muted">selecionados</span>
+                </span>
+                <span className="text-accent">{g.price ?? "sem preço"}</span>
+              </div>
+              {g.selectors.length > 0 && (
+                <ul className="space-y-1.5 rounded-md bg-accent-soft/20 p-3 font-sans text-sm">
+                  {g.selectors.map((s) => (
+                    <li key={s.email} className="leading-tight">
+                      <p className="text-foreground">{s.name}</p>
+                      <p className="text-xs text-muted">
+                        <a
+                          href={`mailto:${s.email}`}
+                          className="break-all hover:text-accent"
+                        >
+                          {s.email}
+                        </a>
+                        <span className="ml-2 whitespace-nowrap">
+                          {new Date(s.at).toLocaleDateString("pt-BR")}
+                        </span>
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  href={`/admin/presentes/${g.id}/edit`}
+                  className="rounded-md border border-accent/30 px-3 py-1 font-sans text-xs text-foreground transition hover:bg-accent-soft/40"
+                >
+                  Editar
+                </Link>
+                <form action={deleteGift}>
+                  <input type="hidden" name="id" value={g.id} />
+                  <button
+                    type="submit"
+                    className="rounded-md border border-red-300 px-3 py-1 font-sans text-xs text-red-700 transition hover:bg-red-50"
+                  >
+                    Remover
+                  </button>
+                </form>
+              </div>
+            </li>
+          ))
+        )}
+      </ul>
+
+      <div className="hidden overflow-x-auto lg:block">
+        <table className="w-full text-left font-sans text-sm">
+          <thead className="bg-accent-soft/40 text-muted">
+            <tr>
+              <th className="px-4 py-3">Imagem</th>
+              <th className="px-4 py-3">Título / URL</th>
+              <th className="px-4 py-3">Qtd</th>
+              <th className="px-4 py-3">Preço</th>
+              <th className="px-4 py-3">Selecionado por</th>
+              <th className="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-accent/10">
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-4 py-8 text-center text-muted">
+                  {gifts.length === 0
+                    ? "Nenhum presente cadastrado."
+                    : "Nenhum presente encontrado."}
+                </td>
+              </tr>
+            )}
+            {filtered.map((g) => (
+              <tr key={g.id} className="align-top">
+                <td className="px-4 py-3">
+                  {g.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={g.image}
+                      alt=""
+                      className="h-14 w-14 rounded object-contain"
+                    />
+                  ) : (
+                    <div className="flex h-14 w-14 items-center justify-center rounded bg-accent-soft/40 text-xs text-muted">
+                      —
+                    </div>
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  <p className="font-serif text-base text-foreground">
+                    {g.title ?? "(sem título — puxa do OG)"}
+                  </p>
+                  <a
+                    href={g.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all text-xs text-muted hover:text-accent"
+                  >
+                    {g.url}
+                  </a>
+                </td>
+                <td className="px-4 py-3 text-foreground">
+                  <span className="font-medium">{g.selectors.length}</span>
+                  <span className="text-muted">/{g.quantity}</span>
+                </td>
+                <td className="px-4 py-3 text-accent">{g.price ?? "—"}</td>
+                <td className="px-4 py-3">
+                  {g.selectors.length === 0 ? (
+                    <span className="text-muted">—</span>
+                  ) : (
+                    <ul className="space-y-1.5">
+                      {g.selectors.map((s) => (
+                        <li key={s.email} className="leading-tight">
+                          <p className="text-foreground">{s.name}</p>
+                          <p className="text-xs text-muted">
+                            <a
+                              href={`mailto:${s.email}`}
+                              className="hover:text-accent"
+                            >
+                              {s.email}
+                            </a>
+                            <span className="ml-2">
+                              {new Date(s.at).toLocaleDateString("pt-BR")}
+                            </span>
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex justify-end gap-2">
+                    <Link
+                      href={`/admin/presentes/${g.id}/edit`}
+                      className="rounded-md border border-accent/30 px-3 py-1 text-xs text-foreground transition hover:bg-accent-soft/40"
+                    >
+                      Editar
+                    </Link>
+                    <form action={deleteGift}>
+                      <input type="hidden" name="id" value={g.id} />
+                      <button
+                        type="submit"
+                        className="rounded-md border border-red-300 px-3 py-1 text-xs text-red-700 transition hover:bg-red-50"
+                      >
+                        Remover
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}

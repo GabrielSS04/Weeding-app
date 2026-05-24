@@ -51,7 +51,7 @@ export default async function Charraia() {
               Gabriel & Nathalia
             </p>
             <div className="mt-5 flex flex-wrap items-center justify-center gap-3 font-serif text-lg text-muted sm:mt-6 sm:gap-4 sm:text-xl md:justify-start">
-              <span>18 . 07 . 2026</span>
+              <span>25 . 07 . 2026</span>
               <span className="h-px w-6 bg-accent sm:w-8" />
               <span>Cascavel</span>
             </div>
@@ -68,7 +68,7 @@ export default async function Charraia() {
           <div className="rounded-lg border border-accent/30 bg-white p-5 sm:p-6">
             <h2 className="font-serif text-lg text-accent sm:text-xl">Quando</h2>
             <p className="mt-2 font-serif text-base text-foreground sm:text-lg">
-              Sábado, 18 de julho de 2026
+              Sábado, 25 de julho de 2026
             </p>
             <p className="mt-1 font-sans text-sm text-muted">
               A partir das 18h
