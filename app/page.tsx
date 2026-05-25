@@ -29,7 +29,7 @@ export default async function Charraia() {
 
       <section className="mx-auto w-full max-w-6xl px-5 pt-8 pb-10 sm:px-6 sm:pt-12 sm:pb-12 md:pt-16">
         <div className="grid gap-8 md:grid-cols-2 md:items-center md:gap-12">
-          <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-accent-soft shadow-md sm:mx-auto sm:max-w-md md:max-w-none">
+          <div className="relative mx-auto aspect-[4/5] w-full max-w-[16rem] overflow-hidden rounded-lg bg-accent-soft shadow-md sm:max-w-md md:max-w-none">
             <Image
               src="/noivos-charraia.png"
               alt="Foto dos noivos na temática junina"
@@ -64,28 +64,7 @@ export default async function Charraia() {
       </section>
 
       <section className="w-full bg-accent-soft/60 py-10 sm:py-12">
-        <div className="mx-auto grid max-w-3xl gap-5 px-5 sm:grid-cols-2 sm:gap-6 sm:px-6">
-          <div className="rounded-lg border border-accent/30 bg-white p-5 sm:p-6">
-            <h2 className="font-serif text-lg text-accent sm:text-xl">Quando</h2>
-            <p className="mt-2 font-serif text-base text-foreground sm:text-lg">
-              Sábado, 25 de julho de 2026
-            </p>
-            <p className="mt-1 font-sans text-sm text-muted">
-              A partir das 18h
-            </p>
-          </div>
-          <div className="rounded-lg border border-accent/30 bg-white p-5 sm:p-6">
-            <h2 className="font-serif text-lg text-accent sm:text-xl">Onde</h2>
-            <p className="mt-2 font-serif text-base text-foreground sm:text-lg">
-              {VENUE_NAME}
-            </p>
-            <p className="mt-1 font-sans text-sm text-muted">
-              {VENUE_ADDRESS}
-            </p>
-          </div>
-        </div>
-
-        <div className="mx-auto mt-6 grid max-w-3xl grid-cols-1 gap-4 px-5 sm:mt-8 sm:grid-cols-2 sm:gap-5 sm:px-6">
+        <div className="mx-auto grid max-w-3xl grid-cols-1 gap-4 px-5 sm:grid-cols-2 sm:gap-5 sm:px-6">
           {navButtons.map((item) => (
             <Link
               key={item.href}
@@ -103,6 +82,28 @@ export default async function Charraia() {
           name={VENUE_NAME}
           address={VENUE_ADDRESS}
           query={VENUE_QUERY}
+          header={
+            <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
+              <div className="rounded-lg border border-accent/30 bg-white p-5 sm:p-6">
+                <h2 className="font-serif text-lg text-accent sm:text-xl">Quando</h2>
+                <p className="mt-2 font-serif text-base text-foreground sm:text-lg">
+                  Sábado, 25 de julho de 2026
+                </p>
+                <p className="mt-1 font-sans text-sm text-muted">
+                  A partir das 18h
+                </p>
+              </div>
+              <div className="rounded-lg border border-accent/30 bg-white p-5 sm:p-6">
+                <h2 className="font-serif text-lg text-accent sm:text-xl">Onde</h2>
+                <p className="mt-2 font-serif text-base text-foreground sm:text-lg">
+                  {VENUE_NAME}
+                </p>
+                <p className="mt-1 font-sans text-sm text-muted">
+                  {VENUE_ADDRESS}
+                </p>
+              </div>
+            </div>
+          }
         />
       </section>
 

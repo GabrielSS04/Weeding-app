@@ -6,6 +6,7 @@ type Props = {
   name: string;
   address: string;
   query: string;
+  header?: React.ReactNode;
 };
 
 function isMobileDevice(): boolean {
@@ -19,7 +20,7 @@ function isMobileDevice(): boolean {
   return false;
 }
 
-export function VenueMap({ name, address, query }: Props) {
+export function VenueMap({ name, address, query, header }: Props) {
   const [chooserOpen, setChooserOpen] = useState(false);
 
   const encoded = encodeURIComponent(query);
@@ -39,6 +40,7 @@ export function VenueMap({ name, address, query }: Props) {
   return (
     <>
       <div className="overflow-hidden rounded-lg border border-accent/20 bg-white shadow-sm">
+        {header ? <div className="p-5 sm:p-6">{header}</div> : null}
         <div className="relative aspect-[16/10] w-full bg-accent-soft/40">
           <iframe
             src={embedUrl}
