@@ -5,6 +5,7 @@ import {
   confirmGuestAdmin,
   declineGuestAdmin,
   deleteGuest,
+  renameGuest,
   resetGuestStatus,
 } from "../actions";
 
@@ -46,6 +47,60 @@ function StatusBadge({ status }: { status: GuestStatus }) {
     <span className="inline-block rounded-full border border-accent/30 bg-accent-soft/40 px-2 py-0.5 text-xs text-muted">
       Pendente
     </span>
+  );
+}
+
+function GuestName({
+  guest,
+  editing,
+  onEdit,
+  onCancel,
+}: {
+  guest: Guest;
+  editing: boolean;
+  onEdit: () => void;
+  onCancel: () => void;
+}) {
+  if (!editing) {
+    return (
+      <div className="flex items-center gap-2">
+        <p className="font-serif text-base text-foreground">{guest.name}</p>
+        <button
+          type="button"
+          onClick={onEdit}
+          className="rounded-md border border-accent/30 px-2 py-0.5 font-sans text-xs text-muted transition hover:bg-accent-soft/40 hover:text-foreground"
+        >
+          editar
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form action={renameGuest} onSubmit={onCancel} className="flex gap-2">
+      <input type="hidden" name="id" value={guest.id} />
+      <input
+        type="text"
+        name="name"
+        defaultValue={guest.name}
+        required
+        autoFocus
+        className="min-w-0 flex-1 rounded-md border border-accent/40 bg-white px-2 py-1 font-sans text-sm outline-none focus:border-accent"
+      />
+      <button
+        type="submit"
+        className="rounded-md bg-accent px-3 py-1 font-sans text-xs text-white transition hover:opacity-90"
+      >
+        Salvar
+      </button>
+      <button
+        type="button"
+        onClick={onCancel}
+        className="rounded-md border border-accent/30 px-3 py-1 font-sans text-xs text-foreground transition hover:bg-accent-soft/40"
+      >
+        Cancelar
+      </button>
+    </form>
   );
 }
 
@@ -108,6 +163,7 @@ const FILTER_OPTIONS: { value: Filter; label: string }[] = [
 export function GuestTable({ guests }: { guests: Guest[] }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("todos");
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   const filtered = useMemo(() => {
     const q = normalize(query.trim());
@@ -163,9 +219,12 @@ export function GuestTable({ guests }: { guests: Guest[] }) {
           filtered.map((g) => (
             <li key={g.id} className="space-y-2 px-4 py-3">
               <div className="flex items-start justify-between gap-3">
-                <p className="font-serif text-base text-foreground">
-                  {g.name}
-                </p>
+                <GuestName
+                  guest={g}
+                  editing={editingId === g.id}
+                  onEdit={() => setEditingId(g.id)}
+                  onCancel={() => setEditingId(null)}
+                />
                 <StatusBadge status={g.status} />
               </div>
               {g.responded_at && (
@@ -200,8 +259,13 @@ export function GuestTable({ guests }: { guests: Guest[] }) {
             ) : (
               filtered.map((g) => (
                 <tr key={g.id}>
-                  <td className="px-4 py-3 font-serif text-base text-foreground">
-                    {g.name}
+                  <td className="px-4 py-3">
+                    <GuestName
+                      guest={g}
+                      editing={editingId === g.id}
+                      onEdit={() => setEditingId(g.id)}
+                      onCancel={() => setEditingId(null)}
+                    />
                   </td>
                   <td className="px-4 py-3">
                     <StatusBadge status={g.status} />

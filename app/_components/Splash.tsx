@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 
 type Stage = "idle" | "letters-in" | "letters-out" | "fade-out" | "done";
 
-const T_LETTERS_IN = 200;
-const T_LETTERS_OUT = 3200;
-const T_FADE_OUT = 6200;
-const T_DONE = 6900;
+const T_LETTERS_IN = 100;
+const T_LETTERS_OUT = 1700;
+const T_FADE_OUT = 3000;
+const T_DONE = 3500;
 
 export function Splash() {
   const [stage, setStage] = useState<Stage>("idle");
@@ -57,14 +57,14 @@ export function Splash() {
       data-theme="junino"
       style={{
         opacity: overlayVisible ? 1 : 0,
-        transition: "opacity 700ms ease-in-out",
+        transition: "opacity 500ms ease-in-out",
       }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-background"
     >
       <div
         style={{
           opacity: lettersVisible ? 1 : 0,
-          transition: "opacity 1500ms ease-in-out",
+          transition: "opacity 800ms ease-in-out",
         }}
         className="w-[60vw] max-w-[420px] sm:w-[40vw]"
       >

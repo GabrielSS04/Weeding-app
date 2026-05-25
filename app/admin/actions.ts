@@ -34,6 +34,15 @@ export async function addGuestsBulk(formData: FormData) {
   revalidate();
 }
 
+export async function renameGuest(formData: FormData) {
+  const id = Number(formData.get("id"));
+  const name = String(formData.get("name") ?? "").trim();
+  if (!Number.isInteger(id) || !name) return;
+
+  await db.query("UPDATE guest_list SET name = $1 WHERE id = $2", [name, id]);
+  revalidate();
+}
+
 export async function deleteGuest(formData: FormData) {
   const id = Number(formData.get("id"));
   if (!Number.isInteger(id)) return;
