@@ -32,15 +32,16 @@ export default async function CharraiaRSVP({
     "SELECT id, name, confirmed_at, declined_at FROM guest_list ORDER BY name ASC"
   );
 
-  const guests = rows.map((g) => ({
-    id: g.id,
-    name: g.name,
-    status: (g.confirmed_at
-      ? "confirmed"
-      : g.declined_at
-      ? "declined"
-      : "pending") as "confirmed" | "declined" | "pending",
-  }));
+  const guests = rows
+    .filter((g) => !g.declined_at)
+    .map((g) => ({
+      id: g.id,
+      name: g.name,
+      status: (g.confirmed_at ? "confirmed" : "pending") as
+        | "confirmed"
+        | "declined"
+        | "pending",
+    }));
 
   const findById = (raw?: string) => {
     if (!raw) return null;
