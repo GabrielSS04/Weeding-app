@@ -44,13 +44,15 @@ export default async function PresentesCharraia() {
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 py-12 sm:px-6 sm:py-16">
-      <Link href="/" className="font-sans text-sm text-muted hover:text-accent">
-        ← Voltar
-      </Link>
-
-      <div className="mt-6 flex flex-col gap-6 sm:mt-8 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
         <div className="flex-1">
-          <h1 className="font-serif text-4xl text-foreground sm:text-5xl">
+          <Link
+            href="/"
+            className="font-sans text-sm text-muted hover:text-accent"
+          >
+            ← Voltar
+          </Link>
+          <h1 className="mt-6 font-serif text-4xl text-foreground sm:mt-8 sm:text-5xl">
             Lista de Presentes
           </h1>
           <p className="mt-3 max-w-2xl font-serif text-base text-muted sm:mt-4 sm:text-lg">
@@ -61,7 +63,7 @@ export default async function PresentesCharraia() {
           </p>
         </div>
 
-        <div className="flex w-full max-w-[10rem] flex-col items-center sm:w-40 sm:shrink-0">
+        <div className="mx-auto flex w-full max-w-[10rem] flex-col items-center sm:mx-0 sm:w-40 sm:shrink-0">
           <div className="w-full overflow-hidden rounded-lg bg-accent-soft p-2 shadow-md">
             <Image
               src="/WhatsApp%20Image%202026-05-29%20at%2021.04.06.jpeg"
@@ -71,10 +73,12 @@ export default async function PresentesCharraia() {
               className="h-auto w-full rounded"
             />
           </div>
-          <p className="mt-2 font-sans text-[10px] uppercase tracking-[0.25em] text-muted">
+          <p className="mt-3 font-sans text-xs uppercase tracking-[0.25em] text-muted sm:text-sm">
             Pix · CPF
           </p>
-          <p className="font-serif text-sm text-foreground">105.125.109-54</p>
+          <p className="font-sans text-lg font-semibold tracking-wide text-foreground sm:text-xl">
+            105.125.109-54
+          </p>
         </div>
       </div>
 
