@@ -47,15 +47,36 @@ export default async function PresentesCharraia() {
       <Link href="/" className="font-sans text-sm text-muted hover:text-accent">
         ← Voltar
       </Link>
-      <h1 className="mt-6 font-serif text-4xl text-foreground sm:mt-8 sm:text-5xl">
-        Lista de Presentes
-      </h1>
-      <p className="mt-3 max-w-2xl font-serif text-base text-muted sm:mt-4 sm:text-lg">
-        Sua presença já é o que mais importa. Os itens abaixo são apenas
-        sugestões &mdash; se preferir presentear com outra coisa, ou não
-        presentear, fique totalmente à vontade. O botão <em>Selecionar</em>{" "}
-        reserva o item, e o link leva direto ao produto.
-      </p>
+
+      <div className="mt-6 flex flex-col gap-6 sm:mt-8 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+        <div className="flex-1">
+          <h1 className="font-serif text-4xl text-foreground sm:text-5xl">
+            Lista de Presentes
+          </h1>
+          <p className="mt-3 max-w-2xl font-serif text-base text-muted sm:mt-4 sm:text-lg">
+            Sua presença já é o que mais importa. Os itens abaixo são apenas
+            sugestões &mdash; se preferir presentear com outra coisa, ou não
+            presentear, fique totalmente à vontade. O botão <em>Selecionar</em>{" "}
+            reserva o item, e o link leva direto ao produto.
+          </p>
+        </div>
+
+        <div className="flex w-full max-w-[10rem] flex-col items-center sm:w-40 sm:shrink-0">
+          <div className="w-full overflow-hidden rounded-lg bg-accent-soft p-2 shadow-md">
+            <Image
+              src="/WhatsApp%20Image%202026-05-29%20at%2021.04.06.jpeg"
+              alt="QR Code do Pix"
+              width={512}
+              height={512}
+              className="h-auto w-full rounded"
+            />
+          </div>
+          <p className="mt-2 font-sans text-[10px] uppercase tracking-[0.25em] text-muted">
+            Pix · CPF
+          </p>
+          <p className="font-serif text-sm text-foreground">105.125.109-54</p>
+        </div>
+      </div>
 
       {products.length === 0 ? (
         <p className="mt-16 text-center font-serif text-lg text-muted">
@@ -64,35 +85,6 @@ export default async function PresentesCharraia() {
       ) : (
         <GiftList products={products} />
       )}
-
-      <section className="mt-16 flex flex-col items-center border-t border-accent-soft pt-12 sm:mt-20 sm:pt-16">
-        <h2 className="font-serif text-3xl text-foreground sm:text-4xl">
-          Presentear via Pix
-        </h2>
-        <p className="mt-3 max-w-xl text-center font-serif text-base text-muted sm:text-lg">
-          Se preferir, é só apontar a câmera para o QR Code abaixo ou usar a
-          chave Pix.
-        </p>
-
-        <div className="mt-8 w-full max-w-xs overflow-hidden rounded-lg bg-accent-soft p-3 shadow-md">
-          <Image
-            src="/WhatsApp%20Image%202026-05-29%20at%2021.04.06.jpeg"
-            alt="QR Code do Pix"
-            width={512}
-            height={512}
-            className="h-auto w-full rounded"
-          />
-        </div>
-
-        <div className="mt-6 flex flex-col items-center gap-1">
-          <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted">
-            Chave Pix (CPF)
-          </p>
-          <p className="font-serif text-2xl text-foreground sm:text-3xl">
-            105.125.109-54
-          </p>
-        </div>
-      </section>
     </main>
   );
 }
