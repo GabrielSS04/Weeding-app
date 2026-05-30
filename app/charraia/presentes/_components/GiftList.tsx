@@ -204,7 +204,7 @@ export function GiftList({ products }: { products: Product[] }) {
                               <span className="rounded-full bg-accent-soft/60 px-2 py-0.5 font-sans text-xs text-muted">
                                 {remaining > 0
                                   ? `${remaining} de ${p.quantity}`
-                                  : "indisponível"}
+                                  : "comprado"}
                               </span>
                             )}
                           </div>
@@ -217,7 +217,7 @@ export function GiftList({ products }: { products: Product[] }) {
                             disabled
                             className="w-full cursor-not-allowed rounded-md border border-accent/20 bg-accent-soft/20 py-2 font-sans text-sm text-muted"
                           >
-                            Indisponível
+                            Comprado
                           </button>
                         ) : (
                           <form action={selectGift}>
