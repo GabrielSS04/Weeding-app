@@ -41,7 +41,16 @@ export function GiftList({ products }: { products: Product[] }) {
 
   return (
     <>
-      <div className="mt-8 sm:mt-10">
+      <div className="mt-8 rounded-lg border border-accent/30 bg-accent-soft/40 p-4 sm:mt-10 sm:p-5">
+        <p className="font-sans text-xs uppercase tracking-[0.2em] text-muted">
+          Endereço para entrega
+        </p>
+        <p className="mt-1 font-serif text-base font-bold text-foreground sm:text-lg">
+          Rua Manoel Antonio de Oliveira, nº 2209 — CEP 85803-700
+        </p>
+      </div>
+
+      <div className="mt-6 sm:mt-8">
         <label className="block font-sans text-sm text-muted">
           Filtrar presentes
         </label>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getGuest } from "@/lib/session";
@@ -63,6 +64,35 @@ export default async function PresentesCharraia() {
       ) : (
         <GiftList products={products} />
       )}
+
+      <section className="mt-16 flex flex-col items-center border-t border-accent-soft pt-12 sm:mt-20 sm:pt-16">
+        <h2 className="font-serif text-3xl text-foreground sm:text-4xl">
+          Presentear via Pix
+        </h2>
+        <p className="mt-3 max-w-xl text-center font-serif text-base text-muted sm:text-lg">
+          Se preferir, é só apontar a câmera para o QR Code abaixo ou usar a
+          chave Pix.
+        </p>
+
+        <div className="mt-8 w-full max-w-xs overflow-hidden rounded-lg bg-accent-soft p-3 shadow-md">
+          <Image
+            src="/WhatsApp%20Image%202026-05-29%20at%2021.04.06.jpeg"
+            alt="QR Code do Pix"
+            width={512}
+            height={512}
+            className="h-auto w-full rounded"
+          />
+        </div>
+
+        <div className="mt-6 flex flex-col items-center gap-1">
+          <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted">
+            Chave Pix (CPF)
+          </p>
+          <p className="font-serif text-2xl text-foreground sm:text-3xl">
+            105.125.109-54
+          </p>
+        </div>
+      </section>
     </main>
   );
 }
