@@ -26,6 +26,8 @@ export default async function PresentesCharraia() {
        (SELECT COUNT(*)::int FROM gift_selections s WHERE s.gift_id = g.id) AS selected_count,
        EXISTS (SELECT 1 FROM gift_selections s WHERE s.gift_id = g.id AND s.email = $1) AS mine
      FROM gifts g
+     WHERE (SELECT COUNT(*)::int FROM gift_selections s WHERE s.gift_id = g.id) < g.quantity
+        OR EXISTS (SELECT 1 FROM gift_selections s WHERE s.gift_id = g.id AND s.email = $1)
      ORDER BY COALESCE(g.title, g.url) ASC`,
     [email]
   );
